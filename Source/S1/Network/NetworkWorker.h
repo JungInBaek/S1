@@ -3,13 +3,53 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/Array.h"
 
-/**
- * 
- */
-class S1_API NetworkWorker
+
+class FSocket;
+
+
+struct S1_API FPacketHeader
+{
+	FPacketHeader() : PacketSize(0), PacketID(0)
+	{
+	}
+
+	FPacketHeader(uint16 PacketSize, uint16 PacketID) : PacketSize(PacketSize), PacketID(PacketID)
+	{
+	}
+
+	friend FArchive& operator<<(FArchive& Ar, FPacketHeader& Header)
+	{
+		Ar << Header.PacketSize;
+		Ar << Header.PacketID;
+		return Ar;
+	}
+
+	uint16 PacketSize;
+	uint16 PacketID;
+};
+
+
+class S1_API RecvWorker : public FRunnable
 {
 public:
-	NetworkWorker();
-	~NetworkWorker();
+	RecvWorker(FSocket* Socket, TSharedPtr<class PacketSession> Session);
+	~RecvWorker();
+
+	virtual bool Init() override;
+	virtual uint32 Run() override;
+	virtual void Exit() override;
+
+	void Destroy();
+
+private:
+	bool ReceviePacket(TArray<uint8>& OutPacket);
+	bool RecevieDesiredBytes(uint8* Results, int32 Size);
+
+protected:
+	FRunnableThread* Thread = nullptr;
+	bool Running = true;
+	FSocket* Socket;
+	TWeakPtr<class PacketSession> SessionRef;
 };

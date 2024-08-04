@@ -2,6 +2,8 @@
 
 
 #include "Network/PacketSession.h"
+#include "NetworkWorker.h"
+
 
 PacketSession::PacketSession(class FSocket* Socket) : Socket(Socket)
 {
@@ -14,6 +16,7 @@ PacketSession::~PacketSession()
 
 void PacketSession::Run()
 {
+	RecvWorkerThread = MakeShared<RecvWorker>(Socket, AsShared());
 }
 
 void PacketSession::Disconnect()

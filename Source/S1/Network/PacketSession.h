@@ -19,4 +19,10 @@ public:
 
 public:
 	class FSocket* Socket;
+
+	TSharedPtr<class RecvWorker> RecvWorkerThread;
+	TSharedPtr<class SendWorker> SendWorkerThread;
+
+	// GameThread와 NetworkThread 간 데이터 주고 받는 공용 큐
+	TQueue<TArray<uint8>> RecvPacketQueue;
 };
