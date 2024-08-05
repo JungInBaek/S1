@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Containers/Array.h"
+#include "Containers/Queue.h"
+#include "S1.h"
 
 
 class FSocket;
@@ -31,6 +32,10 @@ struct S1_API FPacketHeader
 };
 
 
+/*------------------------
+		RecvWorker
+------------------------*/
+
 class S1_API RecvWorker : public FRunnable
 {
 public:
@@ -46,6 +51,35 @@ public:
 private:
 	bool ReceviePacket(TArray<uint8>& OutPacket);
 	bool RecevieDesiredBytes(uint8* Results, int32 Size);
+
+protected:
+	FRunnableThread* Thread = nullptr;
+	bool Running = true;
+	FSocket* Socket;
+	TWeakPtr<class PacketSession> SessionRef;
+};
+
+
+/*------------------------
+		SendWorker
+------------------------*/
+
+class S1_API SendWorker : public FRunnable
+{
+public:
+	SendWorker(FSocket* Socket, TSharedPtr<class PacketSession> Session);
+	~SendWorker();
+
+	virtual bool Init() override;
+	virtual uint32 Run() override;
+	virtual void Exit() override;
+
+	bool SendPacket(SendBufferRef SendBuffer);
+
+	void Destroy();
+
+private:
+	bool SendDesiredBytes(const uint8* Buffer, int32 Size);
 
 protected:
 	FRunnableThread* Thread = nullptr;

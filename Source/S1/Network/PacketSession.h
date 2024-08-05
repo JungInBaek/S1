@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "S1.h"
 
 /**
  * 
@@ -15,6 +16,11 @@ public:
 
 	void Run();
 
+	UFUNCTION(BlueprintCallable)
+	void HandleRecvPackets();
+
+	void SendPacket(SendBufferRef SendBuffer);
+
 	void Disconnect();
 
 public:
@@ -25,4 +31,5 @@ public:
 
 	// GameThread와 NetworkThread 간 데이터 주고 받는 공용 큐
 	TQueue<TArray<uint8>> RecvPacketQueue;
+	TQueue<SendBufferRef> SendPacketQueue;
 };
