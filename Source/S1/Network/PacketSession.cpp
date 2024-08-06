@@ -12,7 +12,7 @@
 
 PacketSession::PacketSession(class FSocket* Socket) : Socket(Socket)
 {
-	
+	ServerPacketHandler::Init();
 }
 
 PacketSession::~PacketSession()
@@ -36,8 +36,8 @@ void PacketSession::HandleRecvPackets()
 			break;
 		}
 
-		// TODO
-		//ServerPacketHandler::HandlePacket();
+		PacketSessionRef ThisPtr = AsShared();
+		ServerPacketHandler::HandlePacket(ThisPtr, Packet.GetData(), Packet.Num());
 	}
 }
 
