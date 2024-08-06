@@ -5,7 +5,6 @@
 #include "S1.h"
 #endif
 
-
 using PacketHandlerFunc = std::function<bool(PacketSessionRef&, BYTE*, int32)>;
 extern PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
@@ -77,9 +76,12 @@ private:
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer->Buffer());
 		header->size = packetSize;
 		header->id = pktId;
-
-		//ASSERT_CRASH(pkt.SerializeToArray(&header[1], dataSize));
+				
+#if UE_BUILD_DEBUG + UE_BUILD_DEVELOPMENT + UE_BUILD_TEST + UE_BUILD_SHIPPING >= 1
 		pkt.SerializeToArray(&header[1], dataSize);
+#else
+		ASSERT_CRASH(pkt.SerializeToArray(&header[1], dataSize));
+#endif
 
 		sendBuffer->Close(packetSize);
 		return sendBuffer;
