@@ -54,7 +54,7 @@ void PacketSession::Disconnect()
 		RecvWorkerThread = nullptr;
 	}
 
-	if (RecvWorkerThread)
+	if (SendWorkerThread)
 	{
 		SendWorkerThread->Destroy();
 		SendWorkerThread = nullptr;
