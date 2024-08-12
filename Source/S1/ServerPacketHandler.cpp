@@ -1,6 +1,7 @@
 #include "ServerPacketHandler.h"
 #include "BufferReader.h"
-#include "PacketSession.h"
+#include "S1.h"
+#include "S1GameInstance.h"
 
 
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
@@ -13,11 +14,27 @@ bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len)
 
 bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 {
+    for (const Protocol::PlayerInfo& Player : pkt.players())
+    {
+        
+    }
+
+    // Lobby에서 캐릭터 선택 후 인덱스 전송
+    Protocol::C_ENTER_GAME EnterGamePkt;
+    EnterGamePkt.set_playerindex(0);
+    SEND_PACKET(EnterGamePkt);
+
     return true;
 }
 
 bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
 {
+    // TODO
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleSpawn(pkt.player());
+    }
+
     return true;
 }
 
@@ -28,6 +45,11 @@ bool Handle_S_LEAVE_GAME(PacketSessionRef& session, Protocol::S_LEAVE_GAME& pkt)
 
 bool Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_SPAWN& pkt)
 {
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleSpawn(pkt);
+    }
+
     return true;
 }
 
