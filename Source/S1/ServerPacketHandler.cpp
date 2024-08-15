@@ -29,10 +29,10 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 
 bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
 {
-    // TODO
+    // TODO: 조건문 수정
     if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
     {
-        GameInstance->HandleSpawn(pkt.player());
+        GameInstance->HandleSpawn(pkt);
     }
 
     return true;

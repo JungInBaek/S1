@@ -8,6 +8,9 @@
 #include "S1GameInstance.generated.h"
 
 
+class AS1Player;
+
+
 UCLASS()
 class S1_API US1GameInstance : public UGameInstance
 {
@@ -26,7 +29,7 @@ public:
 	void SendPacket(SendBufferRef SendBuffer);
 
 public:
-	void HandleSpawn(const Protocol::PlayerInfo& PlayerInfo);
+	void HandleSpawn(const Protocol::PlayerInfo& PlayerInfo, bool IsMine);
 	void HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt);
 	void HandleSpawn(const Protocol::S_SPAWN& SpawnPkt);
 
@@ -42,7 +45,8 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> PlayerClass;
+	TSubclassOf<AS1Player> OtherPlayerClass;
 
-	TMap<uint64, AActor*> Players;
+	AS1Player* MyPlayer;
+	TMap<uint64, AS1Player*> Players;
 };
