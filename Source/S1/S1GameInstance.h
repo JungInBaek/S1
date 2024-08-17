@@ -35,6 +35,8 @@ public:
 
 	void HandleDespawn(uint64 ObjectId);
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
+
+	void HandleMove(const Protocol::S_MOVE& MovePkt);
 	
 public:
 	// Game Server
