@@ -193,5 +193,5 @@ void US1GameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 		return;
 	}
 
-	Player->SetPlayerInfo(MovePkt.info());
+	Player->SetDestInfo(MovePkt.info());
 }

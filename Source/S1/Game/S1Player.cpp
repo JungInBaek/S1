@@ -36,6 +36,7 @@ AS1Player::AS1Player()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
 	PlayerInfo = new Protocol::PlayerInfo();
+	DestInfo = new Protocol::PlayerInfo();
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -44,13 +45,23 @@ AS1Player::AS1Player()
 AS1Player::~AS1Player()
 {
 	delete PlayerInfo;
+	delete DestInfo;
 	PlayerInfo = nullptr;
+	DestInfo = nullptr;
 }
 
 void AS1Player::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
+	{
+		FVector Location = GetActorLocation();
+		DestInfo->set_x(Location.X);
+		DestInfo->set_y(Location.Y);
+		DestInfo->set_z(Location.Z);
+		DestInfo->set_yaw(GetControlRotation().Yaw);
+	}
 }
 
 void AS1Player::Tick(float DeltaTime)
@@ -63,6 +74,24 @@ void AS1Player::Tick(float DeltaTime)
 		PlayerInfo->set_y(Location.Y);
 		PlayerInfo->set_z(Location.Z);
 		PlayerInfo->set_yaw(GetControlRotation().Yaw);
+	}
+
+	if (IsMyPlayer() == false)
+	{
+		FVector Location = GetActorLocation();
+		FVector DestLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+
+		// 방향
+		FVector MoveDir = DestLocation - Location;
+		const float DistToDest = MoveDir.Length();
+		MoveDir.Normalize();
+
+		// 거리
+		float MoveDist = (MoveDir * 600.f * DeltaTime).Length();
+		MoveDist = FMath::Min(MoveDist, DistToDest);
+
+		FVector NextLocation = Location + MoveDir * MoveDist;
+		SetActorLocation(NextLocation);
 	}
 }
 
@@ -82,4 +111,14 @@ void AS1Player::SetPlayerInfo(const Protocol::PlayerInfo& Info)
 
 	FVector Location(Info.x(), Info.y(), Info.z());
 	SetActorLocation(Location);
+}
+
+void AS1Player::SetDestInfo(const Protocol::PlayerInfo& Info)
+{
+	if (PlayerInfo->object_id() != 0)
+	{
+		assert(PlayerInfo->object_id() == Info.object_id());
+	}
+
+	DestInfo->CopyFrom(Info);
 }

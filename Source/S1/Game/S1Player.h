@@ -27,8 +27,10 @@ public:
 
 public:
 	void SetPlayerInfo(const Protocol::PlayerInfo& Info);
+	void SetDestInfo(const Protocol::PlayerInfo& Info);
 	Protocol::PlayerInfo* GetPlayerInfo() { return PlayerInfo; }
 
 protected:
 	class Protocol::PlayerInfo* PlayerInfo;
+	class Protocol::PlayerInfo* DestInfo;
 };
