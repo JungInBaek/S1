@@ -34,6 +34,7 @@ AS1Player::AS1Player()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+	GetCharacterMovement()->bRunPhysicsWithNoController = true;
 
 	PlayerInfo = new Protocol::PlayerInfo();
 	DestInfo = new Protocol::PlayerInfo();
@@ -61,6 +62,8 @@ void AS1Player::BeginPlay()
 		DestInfo->set_y(Location.Y);
 		DestInfo->set_z(Location.Z);
 		DestInfo->set_yaw(GetControlRotation().Yaw);
+
+		SetMoveState(Protocol::MOVE_STATE_IDLE);
 	}
 }
 
@@ -76,28 +79,53 @@ void AS1Player::Tick(float DeltaTime)
 		PlayerInfo->set_yaw(GetControlRotation().Yaw);
 	}
 
-	if (IsMyPlayer() == false)
+	if (IsMyPlayer())
 	{
-		FVector Location = GetActorLocation();
-		FVector DestLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+		return;
+	}
 
-		// 방향
-		FVector MoveDir = DestLocation - Location;
-		const float DistToDest = MoveDir.Length();
-		MoveDir.Normalize();
+	//FVector Location = GetActorLocation();
+	//FVector DestLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
 
-		// 거리
-		float MoveDist = (MoveDir * 600.f * DeltaTime).Length();
-		MoveDist = FMath::Min(MoveDist, DistToDest);
+	//// 방향
+	//FVector MoveDir = DestLocation - Location;
+	//const float DistToDest = MoveDir.Length();
+	//MoveDir.Normalize();
 
-		FVector NextLocation = Location + MoveDir * MoveDist;
-		SetActorLocation(NextLocation);
+	//// 거리
+	//float MoveDist = (MoveDir * 600.f * DeltaTime).Length();
+	//MoveDist = FMath::Min(MoveDist, DistToDest);
+
+	//FVector NextLocation = Location + MoveDir * MoveDist;
+	//SetActorLocation(NextLocation);
+
+	const Protocol::MoveState State = PlayerInfo->state();
+	if (State == Protocol::MOVE_STATE_RUN)
+	{
+		SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
+		AddMovementInput(GetActorForwardVector());
+	}
+	else
+	{
+		// TODO: 보정
 	}
 }
 
 bool AS1Player::IsMyPlayer()
 {
 	return Cast<AS1MyPlayer>(this) != nullptr;
+}
+
+void AS1Player::SetMoveState(Protocol::MoveState State)
+{
+	if (PlayerInfo->state() == State)
+	{
+		return;
+	}
+
+	PlayerInfo->set_state(State);
+
+	// TODO
 }
 
 void AS1Player::SetPlayerInfo(const Protocol::PlayerInfo& Info)
@@ -121,4 +149,6 @@ void AS1Player::SetDestInfo(const Protocol::PlayerInfo& Info)
 	}
 
 	DestInfo->CopyFrom(Info);
+
+	SetMoveState(Info.state());
 }
