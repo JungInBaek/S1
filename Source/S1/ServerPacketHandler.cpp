@@ -14,7 +14,7 @@ bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len)
 
 bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 {
-    for (const Protocol::PlayerInfo& Player : pkt.players())
+    for (const Protocol::ObjectInfo& Player : pkt.players())
     {
         
     }
