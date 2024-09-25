@@ -14,4 +14,6 @@ class S1_API AS1GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	AS1GameModeBase();
 };

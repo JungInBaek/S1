@@ -5,6 +5,8 @@
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, S1, "S1" );
 
+DEFINE_LOG_CATEGORY(S1);
+
 
 /*-----------------------
 		SendBuffer
