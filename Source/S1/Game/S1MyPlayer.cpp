@@ -70,7 +70,7 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 
 		//Jumping
 		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		//EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		//Moving
 		EnhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Triggered, this, &AS1MyPlayer::Move);
@@ -84,11 +84,9 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 
 void AS1MyPlayer::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	PlayerMove();
 
-	direction = FTransform(GetControlRotation()).TransformVector(direction);
-	AddMovementInput(direction);
-	direction = FVector::ZeroVector;
+	Super::Tick(DeltaTime);
 
 	// 현재 위치, 회전 정보 전송
 	Protocol::C_MOVE MovePkt;
@@ -140,6 +138,13 @@ void AS1MyPlayer::Tick(float DeltaTime)
 
 	//	SEND_PACKET(MovePkt);
 	//}
+}
+
+void AS1MyPlayer::PlayerMove()
+{
+	direction = FTransform(GetControlRotation()).TransformVector(direction);
+	AddMovementInput(direction);
+	direction = FVector::ZeroVector;
 }
 
 void AS1MyPlayer::Move(const FInputActionValue& Value)

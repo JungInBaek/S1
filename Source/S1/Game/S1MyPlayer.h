@@ -33,13 +33,12 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 protected:
-	/** Called for movement input */
+	void PlayerMove();
+
 	void Move(const FInputActionValue& Value);
-
-	/** Called for looking input */
 	void LookUp(const FInputActionValue& Value);
-
 	void Turn(const FInputActionValue& Value);
+
 
 protected:
 	/** Camera boom positioning the camera behind the character */
