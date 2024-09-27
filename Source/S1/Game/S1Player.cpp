@@ -15,6 +15,15 @@
 
 AS1Player::AS1Player()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
+	if (TempMesh.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(TempMesh.Object);
+		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
+	}
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -24,17 +33,17 @@ AS1Player::AS1Player()
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
+	//GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	//GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 700.f;
+	/*GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	GetCharacterMovement()->bRunPhysicsWithNoController = true;
+	GetCharacterMovement()->bRunPhysicsWithNoController = true;*/
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
@@ -84,6 +93,10 @@ void AS1Player::Tick(float DeltaTime)
 		return;
 	}
 
+	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
+	/*AddActorLocalRotation(FRotator(0, DestInfo->yaw(), 0));
+	SetDestInfo(Protocol::PosInfo());*/
+
 	//FVector Location = GetActorLocation();
 	//FVector DestLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
 
@@ -99,16 +112,34 @@ void AS1Player::Tick(float DeltaTime)
 	//FVector NextLocation = Location + MoveDir * MoveDist;
 	//SetActorLocation(NextLocation);
 
-	const Protocol::MoveState State = PlayerInfo->state();
-	if (State == Protocol::MOVE_STATE_RUN)
-	{
-		SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-		AddMovementInput(GetActorForwardVector());
-	}
-	else
-	{
-		// TODO: 보정
-	}
+	//const Protocol::MoveState State = PlayerInfo->state();
+	//if (State == Protocol::MOVE_STATE_RUN)
+	//{
+	//	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
+
+	//	// P = P0 + vt;
+	//	FVector P0 = GetActorLocation();
+	//	FVector dest = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+
+	//	// 방향
+	//	FVector dir = dest - P0;
+	//	const float destDist = dir.Length();
+	//	dir.Normalize();
+
+	//	// 거리
+	//	float dist = (dir * 600.f * DeltaTime).Length();
+	//	dist = FMath::Min(dist, destDist);
+
+	//	FVector vt = dir * dist;
+	//	FVector P = P0 + vt;
+
+	//	SetActorLocation(P);
+	//	//AddMovementInput(GetActorForwardVector());
+	//}
+	//else
+	//{
+	//	// TODO: 보정
+	//}
 }
 
 bool AS1Player::IsMyPlayer()

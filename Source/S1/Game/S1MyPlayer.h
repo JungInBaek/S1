@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Game/S1Player.h"
-#include "InputActionValue.h"
 #include "S1MyPlayer.generated.h"
 
 /**
@@ -38,7 +37,9 @@ protected:
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
+	void LookUp(const FInputActionValue& Value);
+
+	void Turn(const FInputActionValue& Value);
 
 protected:
 	/** Camera boom positioning the camera behind the character */
@@ -49,25 +50,33 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+protected:
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputMappingContext* DefaultMappingContext;
+	class UInputMappingContext* imc_default;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* JumpAction;
+	class UInputAction* ia_Jump;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* MoveAction;
+	class UInputAction* ia_Move;
 
 	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_LookUp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_Turn;
 	
 protected:
-	const float MOVE_PACKET_SEND_DELAY = 0.2f;
+	const float MOVE_PACKET_SEND_DELAY = 0.1f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+
+	// 이동 속도
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float walkSpeed = 600;
 
 	// Cache
 	FVector2D DesiredInput;
@@ -76,4 +85,5 @@ protected:
 
 	// Dirty Flag Test
 	FVector2D LastDesiredInput;
+	float LastDesiredYaw;
 };
