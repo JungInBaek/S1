@@ -94,6 +94,7 @@ void AS1Player::Tick(float DeltaTime)
 	}
 
 	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
+	SetActorLocation(FVector(DestInfo->x(), DestInfo->y(), DestInfo->z()));
 	/*AddActorLocalRotation(FRotator(0, DestInfo->yaw(), 0));
 	SetDestInfo(Protocol::PosInfo());*/
 

@@ -78,12 +78,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
 	float walkSpeed = 600;
 
+	FVector direction;
+
 	// Cache
-	FVector2D DesiredInput;
-	FVector DesiredMoveDirection;
-	float DesiredYaw;
+	FVector2D desiredInput;
+	FVector desiredDirection;
+	float desiredYaw;
 
 	// Dirty Flag Test
-	FVector2D LastDesiredInput;
-	float LastDesiredYaw;
+	FVector2D lastDesiredInput;
+	float lastDesiredYaw;
 };

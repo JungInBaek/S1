@@ -86,6 +86,10 @@ void AS1MyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	direction = FTransform(GetControlRotation()).TransformVector(direction);
+	AddMovementInput(direction);
+	direction = FVector::ZeroVector;
+
 	// 현재 위치, 회전 정보 전송
 	Protocol::C_MOVE MovePkt;
 	{
@@ -142,8 +146,8 @@ void AS1MyPlayer::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	DesiredMoveDirection.X = MovementVector.X;
-	DesiredMoveDirection.Y = MovementVector.Y;
+	direction.X = MovementVector.X;
+	direction.Y = MovementVector.Y;
 
 	/*FVector P0 = GetActorLocation();
 	FVector vt = DesiredMoveDirection * walkSpeed * DeltaTime;
@@ -164,8 +168,6 @@ void AS1MyPlayer::Move(const FInputActionValue& Value)
 		// add movement 
 		/*AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);*/
-		DesiredMoveDirection = FTransform(Rotation).TransformVector(DesiredMoveDirection);
-		AddMovementInput(DesiredMoveDirection);
 
 		// Cache
 		{
@@ -173,7 +175,7 @@ void AS1MyPlayer::Move(const FInputActionValue& Value)
 			//DesiredInput = MovementVector;
 
 			// 방향 벡터
-			DesiredMoveDirection = FVector::ZeroVector;
+			desiredDirection = FVector::ZeroVector;
 			/*DesiredMoveDirection += ForwardDirection * MovementVector.Y;
 			DesiredMoveDirection += RightDirection * MovementVector.X;*/
 			//DesiredMoveDirection.Normalize();
@@ -196,5 +198,5 @@ void AS1MyPlayer::Turn(const FInputActionValue& Value)
 {
 	float value = Value.Get<float>();
 	AddControllerYawInput(value);
-	DesiredYaw = value;
+	desiredYaw = value;
 }
