@@ -8,6 +8,7 @@
 #include "Protocol.pb.h"
 #include "S1Player.generated.h"
 
+
 UCLASS()
 class S1_API AS1Player : public ACharacter
 {
@@ -24,6 +25,7 @@ protected:
 
 public:
 	bool IsMyPlayer();
+	void Fire();
 
 	Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
 	void SetMoveState(Protocol::MoveState State);
@@ -35,5 +37,12 @@ public:
 
 protected:
 	class Protocol::PosInfo* PlayerInfo;	// 현재 위치
-	class Protocol::PosInfo* DestInfo;	// 목적지
+	class Protocol::PosInfo* DestInfo;		// 목적지
+
+public:
+	UPROPERTY(VisibleAnywhere, Category = GunMesh)
+	class USkeletalMeshComponent* gunMeshComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
+	TSubclassOf<class ABullet> bulletFactory;
 };

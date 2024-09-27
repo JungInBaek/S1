@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "S1MyPlayer.h"
+#include "Bullet.h"
 
 
 AS1Player::AS1Player()
@@ -45,11 +46,19 @@ AS1Player::AS1Player()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->bRunPhysicsWithNoController = true;*/
 
+	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
+	gunMeshComp->SetupAttachment(GetMesh());
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
+	if (TempGunMesh.Succeeded())
+	{
+		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
+		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
+	}
+
+
+
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
 AS1Player::~AS1Player()
@@ -146,6 +155,12 @@ void AS1Player::Tick(float DeltaTime)
 bool AS1Player::IsMyPlayer()
 {
 	return Cast<AS1MyPlayer>(this) != nullptr;
+}
+
+void AS1Player::Fire()
+{
+	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
+	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 }
 
 void AS1Player::SetMoveState(Protocol::MoveState State)

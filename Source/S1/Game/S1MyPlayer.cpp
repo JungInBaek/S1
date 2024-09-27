@@ -13,6 +13,7 @@
 #include "InputActionValue.h"
 #include "S1.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Bullet.h"
 
 
 AS1MyPlayer::AS1MyPlayer()
@@ -68,17 +69,20 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 
-		//Jumping
+		// Jumping
 		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		//EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-		//Moving
+		// Moving
 		EnhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Triggered, this, &AS1MyPlayer::Move);
 		//EnhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Completed, this, &AS1MyPlayer::Move);
 
-		//Looking
+		// Looking
 		EnhancedInputComponent->BindAction(ia_LookUp, ETriggerEvent::Triggered, this, &AS1MyPlayer::LookUp);
 		EnhancedInputComponent->BindAction(ia_Turn, ETriggerEvent::Triggered, this, &AS1MyPlayer::Turn);
+
+		// Gun Fire
+		EnhancedInputComponent->BindAction(ia_Fire, ETriggerEvent::Started, this, &AS1MyPlayer::Fire);
 	}
 }
 
@@ -204,4 +208,13 @@ void AS1MyPlayer::Turn(const FInputActionValue& Value)
 	float value = Value.Get<float>();
 	AddControllerYawInput(value);
 	desiredYaw = value;
+}
+
+void AS1MyPlayer::Fire(const FInputActionValue& Value)
+{
+	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
+	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+
+	Protocol::C_FIRE firePkt;
+	SEND_PACKET(firePkt);
 }

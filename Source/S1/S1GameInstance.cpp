@@ -196,3 +196,28 @@ void US1GameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 
 	Player->SetDestInfo(MovePkt.info());
 }
+
+void US1GameInstance::HandleFire(const Protocol::S_FIRE& firePkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	for (const uint64& objectId : firePkt.object_ids())
+	{
+		AS1Player** FindPlayer = Players.Find(objectId);
+		if (FindPlayer == nullptr)
+		{
+			return;
+		}
+
+		AS1Player* player = *FindPlayer;
+		if (player->IsMyPlayer())
+		{
+			return;
+		}
+
+		player->Fire();
+	}
+}

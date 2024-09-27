@@ -67,3 +67,14 @@ message S_CHAT
 	uint64 playerId = 1;
 	string msg = 2;
 }
+
+
+message C_FIRE
+{
+	
+}
+
+message S_FIRE
+{
+	repeated uint64 object_ids = 1;
+}

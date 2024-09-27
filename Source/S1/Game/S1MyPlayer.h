@@ -38,7 +38,7 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void LookUp(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
-
+	void Fire(const struct FInputActionValue& Value);
 
 protected:
 	/** Camera boom positioning the camera behind the character */
@@ -68,6 +68,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* ia_Turn;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_Fire;
 	
 protected:
 	const float MOVE_PACKET_SEND_DELAY = 0.1f;
