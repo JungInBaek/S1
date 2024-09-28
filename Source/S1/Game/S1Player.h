@@ -21,23 +21,35 @@ public:
 protected:
 	// To add mapping context
 	virtual void BeginPlay();
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	virtual void Tick(float DeltaTime) override;
 
 public:
 	bool IsMyPlayer();
-	void Fire();
 
-	Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
-	void SetMoveState(Protocol::MoveState State);
+	void Turn(float yaw);
+	void Fire();
+	void PlayerMove();
+
 
 public:
 	void SetPlayerInfo(const Protocol::PosInfo& Info);
+	void SetMoveState(Protocol::MoveState State);
 	void SetDestInfo(const Protocol::PosInfo& Info);
+
 	Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
+	Protocol::MoveState GetMoveState() { return PlayerInfo->state(); }
 
 protected:
-	class Protocol::PosInfo* PlayerInfo;	// 현재 위치
+	class Protocol::PosInfo* PlayerInfo;	// 현재 플레이어 정보
 	class Protocol::PosInfo* DestInfo;		// 목적지
+
+public:
+	FVector direction;
+
+	float rate = 45.0f;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = GunMesh)

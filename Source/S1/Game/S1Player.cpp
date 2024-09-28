@@ -12,6 +12,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "S1MyPlayer.h"
 #include "Bullet.h"
+#include "S1.h"
 
 
 AS1Player::AS1Player()
@@ -30,12 +31,15 @@ AS1Player::AS1Player()
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
+
 	// Configure character movement
-	//GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	//GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...	
+	GetCharacterMovement()->bIgnoreBaseRotation = false;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
@@ -55,7 +59,7 @@ AS1Player::AS1Player()
 		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
 	}
 
-
+	direction = FVector::ZeroVector;
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
@@ -85,71 +89,18 @@ void AS1Player::BeginPlay()
 	}
 }
 
+void AS1Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	
+}
+
 void AS1Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	{
-		FVector Location = GetActorLocation();
-		PlayerInfo->set_x(Location.X);
-		PlayerInfo->set_y(Location.Y);
-		PlayerInfo->set_z(Location.Z);
-		PlayerInfo->set_yaw(GetControlRotation().Yaw);
-	}
-
-	if (IsMyPlayer())
-	{
-		return;
-	}
-
-	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-	SetActorLocation(FVector(DestInfo->x(), DestInfo->y(), DestInfo->z()));
-	/*AddActorLocalRotation(FRotator(0, DestInfo->yaw(), 0));
-	SetDestInfo(Protocol::PosInfo());*/
-
-	//FVector Location = GetActorLocation();
-	//FVector DestLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
-
-	//// 방향
-	//FVector MoveDir = DestLocation - Location;
-	//const float DistToDest = MoveDir.Length();
-	//MoveDir.Normalize();
-
-	//// 거리
-	//float MoveDist = (MoveDir * 600.f * DeltaTime).Length();
-	//MoveDist = FMath::Min(MoveDist, DistToDest);
-
-	//FVector NextLocation = Location + MoveDir * MoveDist;
-	//SetActorLocation(NextLocation);
-
-	//const Protocol::MoveState State = PlayerInfo->state();
-	//if (State == Protocol::MOVE_STATE_RUN)
-	//{
-	//	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-
-	//	// P = P0 + vt;
-	//	FVector P0 = GetActorLocation();
-	//	FVector dest = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
-
-	//	// 방향
-	//	FVector dir = dest - P0;
-	//	const float destDist = dir.Length();
-	//	dir.Normalize();
-
-	//	// 거리
-	//	float dist = (dir * 600.f * DeltaTime).Length();
-	//	dist = FMath::Min(dist, destDist);
-
-	//	FVector vt = dir * dist;
-	//	FVector P = P0 + vt;
-
-	//	SetActorLocation(P);
-	//	//AddMovementInput(GetActorForwardVector());
-	//}
-	//else
-	//{
-	//	// TODO: 보정
-	//}
+	PlayerMove();
 }
 
 bool AS1Player::IsMyPlayer()
@@ -157,10 +108,27 @@ bool AS1Player::IsMyPlayer()
 	return Cast<AS1MyPlayer>(this) != nullptr;
 }
 
+void AS1Player::Turn(float yaw)
+{
+	if (AController* controller = GetController())
+	{
+		auto rotator = GetActorRotation();
+		rotator.Yaw = yaw;
+		SetActorRotation(rotator);
+	}
+}
+
 void AS1Player::Fire()
 {
 	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
 	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+}
+
+void AS1Player::PlayerMove()
+{
+	direction = FTransform(GetActorRotation()).TransformVector(direction);
+	AddMovementInput(direction);
+	direction = FVector::ZeroVector;
 }
 
 void AS1Player::SetMoveState(Protocol::MoveState State)

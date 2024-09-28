@@ -32,9 +32,7 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-protected:
-	void PlayerMove();
-
+public:
 	void Move(const FInputActionValue& Value);
 	void LookUp(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
@@ -79,8 +77,6 @@ protected:
 	// 이동 속도
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
 	float walkSpeed = 600;
-
-	FVector direction;
 
 	// Cache
 	FVector2D desiredInput;

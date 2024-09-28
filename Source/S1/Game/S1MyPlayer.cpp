@@ -11,9 +11,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "S1.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Bullet.h"
+#include "S1.h"
 
 
 AS1MyPlayer::AS1MyPlayer()
@@ -88,126 +88,47 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 
 void AS1MyPlayer::Tick(float DeltaTime)
 {
-	PlayerMove();
-
 	Super::Tick(DeltaTime);
-
-	// 현재 위치, 회전 정보 전송
-	Protocol::C_MOVE MovePkt;
-	{
-		Protocol::PosInfo* Info = MovePkt.mutable_info();
-		Info->CopyFrom(*PlayerInfo);
-		Info->set_yaw(GetActorRotation().Yaw);
-		Info->set_state(GetMoveState());
-	}
-	SEND_PACKET(MovePkt);
-
-	// Send 판정
-	//bool ForceSendPacket = false;
-	//if (LastDesiredInput != DesiredInput)
-	//{
-	//	ForceSendPacket = true;
-	//	LastDesiredInput = DesiredInput;
-	//}
-	//if (LastDesiredYaw != DesiredYaw)
-	//{
-	//	ForceSendPacket = true;
-	//	LastDesiredYaw = DesiredYaw;
-	//}
-
-	//// State 정보
-	//if (DesiredInput == FVector2D::Zero())
-	//{
-	//	PlayerInfo->set_state(Protocol::MOVE_STATE_IDLE);
-	//}
-	//else
-	//{
-	//	PlayerInfo->set_state(Protocol::MOVE_STATE_RUN);
-	//}
-
-	//MovePacketSendTimer -= DeltaTime;
-	//if (MovePacketSendTimer <= 0 || ForceSendPacket)
-	//{
-	//	MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
-
-	//	Protocol::C_MOVE MovePkt;
-
-	//	// 현재 위치 정보
-	//	{
-	//		Protocol::PosInfo* Info = MovePkt.mutable_info();
-	//		Info->CopyFrom(*PlayerInfo);
-	//		Info->set_yaw(DesiredYaw);
-	//		Info->set_state(GetMoveState());
-	//	}
-
-	//	SEND_PACKET(MovePkt);
-	//}
-}
-
-void AS1MyPlayer::PlayerMove()
-{
-	direction = FTransform(GetControlRotation()).TransformVector(direction);
-	AddMovementInput(direction);
-	direction = FVector::ZeroVector;
 }
 
 void AS1MyPlayer::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-	direction.X = MovementVector.X;
-	direction.Y = MovementVector.Y;
+	FVector2D value = Value.Get<FVector2D>();
+	direction.X = value.X;
+	direction.Y = value.Y;
 
-	/*FVector P0 = GetActorLocation();
-	FVector vt = DesiredMoveDirection * walkSpeed * DeltaTime;
-	FVector P = P0 + vt;*/
-
-	if (Controller != nullptr)
+	Protocol::C_MOVE MovePkt;
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		//const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		//const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-		// get right vector 
-		//const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		/*AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);*/
-
-		// Cache
-		{
-			// 키보드 입력
-			//DesiredInput = MovementVector;
-
-			// 방향 벡터
-			desiredDirection = FVector::ZeroVector;
-			/*DesiredMoveDirection += ForwardDirection * MovementVector.Y;
-			DesiredMoveDirection += RightDirection * MovementVector.X;*/
-			//DesiredMoveDirection.Normalize();
-
-			//const FVector Location = GetActorLocation();
-			//FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
-			//DesiredYaw = Rotator.Yaw;
-			//DesiredYaw = Rotation.Yaw;
-		}
+		Protocol::PosInfo* Info = MovePkt.mutable_info();
+		Info->CopyFrom(*PlayerInfo);
+		Info->set_x(direction.X);
+		Info->set_y(direction.Y);
+		Info->set_state(GetMoveState());
 	}
+	SEND_PACKET(MovePkt);
 }
 
 void AS1MyPlayer::LookUp(const FInputActionValue& Value)
 {
 	float value = Value.Get<float>();
+	value *= GetWorld()->GetDeltaSeconds();
+	value *= rate;
 	AddControllerPitchInput(value);
 }
 
 void AS1MyPlayer::Turn(const FInputActionValue& Value)
 {
 	float value = Value.Get<float>();
+	value *= GetWorld()->GetDeltaSeconds();
+	value *= rate;
 	AddControllerYawInput(value);
-	desiredYaw = value;
+
+	const uint64 objectId = PlayerInfo->object_id();
+
+	Protocol::C_TURN turnPkt;
+	turnPkt.set_object_id(objectId);
+	turnPkt.set_yaw(GetControlRotation().Yaw);
+	SEND_PACKET(turnPkt);
 }
 
 void AS1MyPlayer::Fire(const FInputActionValue& Value)

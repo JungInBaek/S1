@@ -68,6 +68,16 @@ bool Handle_S_DESPAWN(PacketSessionRef& session, Protocol::S_DESPAWN& pkt)
     return true;
 }
 
+bool Handle_S_TURN(PacketSessionRef& session, Protocol::S_TURN& pkt)
+{
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleTurn(pkt);
+    }
+
+    return true;
+}
+
 bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 {
     if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))

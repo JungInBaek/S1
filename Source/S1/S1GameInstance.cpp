@@ -10,6 +10,7 @@
 #include "Protocol.pb.h"
 #include "ServerPacketHandler.h"
 #include "S1MyPlayer.h"
+#include "S1.h"
 
 
 void US1GameInstance::ConnectToGameServer()
@@ -168,6 +169,36 @@ void US1GameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt)
 	}
 }
 
+void US1GameInstance::HandleTurn(const Protocol::S_TURN& TurnPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	const uint64 objectId = TurnPkt.object_id();
+	AS1Player** FindPlayer = Players.Find(objectId);
+	if (FindPlayer == nullptr)
+	{
+		return;
+	}
+
+	AS1Player* player = *FindPlayer;
+	if (player->IsMyPlayer())
+	{
+		return;
+	}
+
+	float yaw = TurnPkt.yaw();
+	player->Turn(yaw);
+}
+
 void US1GameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
@@ -194,30 +225,30 @@ void US1GameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 		return;
 	}
 
-	Player->SetDestInfo(MovePkt.info());
+	//Player->SetDestInfo(MovePkt.info());
+	Player->direction.X = MovePkt.info().x();
+	Player->direction.Y = MovePkt.info().y();
 }
 
-void US1GameInstance::HandleFire(const Protocol::S_FIRE& firePkt)
+void US1GameInstance::HandleFire(const Protocol::S_FIRE& FirePkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
 	{
 		return;
 	}
 
-	for (const uint64& objectId : firePkt.object_ids())
+	const uint64 objectId = FirePkt.object_id();
+	AS1Player** FindPlayer = Players.Find(objectId);
+	if (FindPlayer == nullptr)
 	{
-		AS1Player** FindPlayer = Players.Find(objectId);
-		if (FindPlayer == nullptr)
-		{
-			return;
-		}
-
-		AS1Player* player = *FindPlayer;
-		if (player->IsMyPlayer())
-		{
-			return;
-		}
-
-		player->Fire();
+		return;
 	}
+
+	AS1Player* player = *FindPlayer;
+	if (player->IsMyPlayer())
+	{
+		return;
+	}
+
+	player->Fire();
 }
