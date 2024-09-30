@@ -78,6 +78,16 @@ bool Handle_S_TURN(PacketSessionRef& session, Protocol::S_TURN& pkt)
     return true;
 }
 
+bool Handle_S_JUMP(PacketSessionRef& session, Protocol::S_JUMP& pkt)
+{
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleJump(pkt);
+    }
+
+    return true;
+}
+
 bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 {
     if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))

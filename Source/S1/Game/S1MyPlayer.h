@@ -33,6 +33,8 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 public:
+	void Jump(const FInputActionValue& Value);
+	void StopJumping(const FInputActionValue& Value);
 	void Move(const FInputActionValue& Value);
 	void LookUp(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
@@ -94,9 +96,10 @@ protected:
 	float walkSpeed = 600;
 
 	// cache
-	FVector2D input;
+	FVector2D moveInput;
 	FVector direction;
 	float yaw;
+	float jumpInput;
 
 	// dirty flag
 	FVector2D lastInput;

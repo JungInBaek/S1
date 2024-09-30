@@ -123,7 +123,7 @@ void AS1Player::Tick(float DeltaTime)
 		return;
 	}
 
-	PlayerMove(DeltaTime);
+	PlayerMoveTick(DeltaTime);
 }
 
 bool AS1Player::IsMyPlayer()
@@ -147,7 +147,7 @@ void AS1Player::Fire()
 	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 }
 
-void AS1Player::PlayerMove(float DeltaTime)
+void AS1Player::PlayerMoveTick(float DeltaTime)
 {
 	/*direction = FTransform(GetActorRotation()).TransformVector(direction);
 	AddMovementInput(direction);
@@ -157,7 +157,7 @@ void AS1Player::PlayerMove(float DeltaTime)
 
 	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
 
-	if (state == Protocol::MOVE_STATE_RUN)
+	//if (state == Protocol::MOVE_STATE_RUN)
 	{
 		FVector location = GetActorLocation();
 		FVector destLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
@@ -172,6 +172,11 @@ void AS1Player::PlayerMove(float DeltaTime)
 
 		SetActorLocation(nextLocation);
 	}
+}
+
+void AS1Player::Jump()
+{
+	Super::Jump();
 }
 
 void AS1Player::SetMoveState(Protocol::MoveState State)

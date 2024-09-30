@@ -75,8 +75,8 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 
 		// Jumping
-		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Started, this, &AS1MyPlayer::Jump);
+		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Completed, this, &AS1MyPlayer::StopJumping);
 
 		// Moving
 		EnhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Triggered, this, &AS1MyPlayer::Move);
@@ -105,18 +105,18 @@ void AS1MyPlayer::Tick(float DeltaTime)
 
 	// 패킷 Send 판정
 	bool forceSendPacket = false;
-	if (lastInput != input)
+	if (lastInput != moveInput)
 	{
 		forceSendPacket = true;
-		lastInput = input;
+		lastInput = moveInput;
 	}
 
 	// state 정보
-	if (input == FVector2D::Zero())
+	if (moveInput == FVector2D::Zero())
 	{
 		SetMoveState(Protocol::MOVE_STATE_IDLE);
 	}
-	else
+	else if (moveInput != FVector2D::Zero())
 	{
 		SetMoveState(Protocol::MOVE_STATE_RUN);
 	}
@@ -138,11 +138,24 @@ void AS1MyPlayer::Tick(float DeltaTime)
 	}
 }
 
+void AS1MyPlayer::Jump(const FInputActionValue& Value)
+{
+	Super::Jump();
+	jumpInput = Value.Get<float>();
+
+	
+}
+
+void AS1MyPlayer::StopJumping(const FInputActionValue& Value)
+{
+	Super::StopJumping();
+}
+
 void AS1MyPlayer::Move(const FInputActionValue& Value)
 {
-	input = Value.Get<FVector2D>();
-	direction.X = input.X;
-	direction.Y = input.Y;
+	moveInput = Value.Get<FVector2D>();
+	direction.X = moveInput.X;
+	direction.Y = moveInput.Y;
 
 	AddMovementInput(FTransform(GetActorRotation()).TransformVector(direction));
 }

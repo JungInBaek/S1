@@ -31,7 +31,8 @@ public:
 
 	void Turn(float yaw);
 	void Fire();
-	void PlayerMove(float DeltaTime);
+	void PlayerMoveTick(float DeltaTime);
+	void Jump();
 
 public:
 	void SetPlayerInfo(const Protocol::PosInfo& Info);

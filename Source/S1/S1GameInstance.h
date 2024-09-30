@@ -38,6 +38,7 @@ public:
 
 	void HandleTurn(const Protocol::S_TURN& TurnPkt);
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
+	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 	void HandleFire(const Protocol::S_FIRE& FirePkt);
 	
 public:

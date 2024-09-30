@@ -230,6 +230,29 @@ void US1GameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 	Player->direction.Y = MovePkt.info().y();*/
 }
 
+void US1GameInstance::HandleJump(const Protocol::S_JUMP& JumpPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	const uint64 objectId = JumpPkt.object_id();
+	AS1Player** FindPlayer = Players.Find(objectId);
+	if (FindPlayer == nullptr)
+	{
+		return;
+	}
+
+	AS1Player* player = *FindPlayer;
+	if (player->IsMyPlayer())
+	{
+		return;
+	}
+
+	player->Jump();
+}
+
 void US1GameInstance::HandleFire(const Protocol::S_FIRE& FirePkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
