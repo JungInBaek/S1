@@ -28,7 +28,7 @@ AS1Player::AS1Player()
 	}
 
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	//GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -59,6 +59,18 @@ AS1Player::AS1Player()
 		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
 		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
 	}
+
+	sniperGunComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
+	sniperGunComp->SetupAttachment(GetMesh());
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperMesh(TEXT("StaticMesh'/Game/SniperGun/sniper1.sniper1'"));
+	if (TempSniperMesh.Succeeded())
+	{
+		sniperGunComp->SetStaticMesh(TempSniperMesh.Object);
+		sniperGunComp->SetRelativeLocation(FVector(-22, 55, 120));
+		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
+	}
+
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
@@ -154,7 +166,7 @@ void AS1Player::PlayerMove(float DeltaTime)
 		const float distanceToDest = direction.Length();
 		direction.Normalize();
 
-		float distance = (direction * 500.f * DeltaTime).Length();
+		float distance = (direction * 600.f * DeltaTime).Length();
 		distance = FMath::Min(distanceToDest, distance);
 		FVector nextLocation = location + direction * distance;
 

@@ -14,6 +14,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Bullet.h"
 #include "S1.h"
+#include "Blueprint/UserWidget.h"
 
 
 AS1MyPlayer::AS1MyPlayer()
@@ -59,6 +60,10 @@ void AS1MyPlayer::BeginPlay()
 			Subsystem->AddMappingContext(imc_default, 0);
 		}
 	}
+
+	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
+
+	ChangeToSniperGun(FInputActionValue());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -83,6 +88,14 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 
 		// Gun Fire
 		EnhancedInputComponent->BindAction(ia_Fire, ETriggerEvent::Started, this, &AS1MyPlayer::Fire);
+
+		// Gun Change
+		EnhancedInputComponent->BindAction(ia_GrenadeGun, ETriggerEvent::Started, this, &AS1MyPlayer::ChangeToGrenadeGun);
+		EnhancedInputComponent->BindAction(ia_SniperGun, ETriggerEvent::Started, this, &AS1MyPlayer::ChangeToSniperGun);
+
+		// Sniper Aim
+		EnhancedInputComponent->BindAction(ia_Sniper, ETriggerEvent::Started, this, &AS1MyPlayer::SniperAim);
+		EnhancedInputComponent->BindAction(ia_Sniper, ETriggerEvent::Completed, this, &AS1MyPlayer::SniperAim);
 	}
 }
 
@@ -167,4 +180,43 @@ void AS1MyPlayer::Fire(const FInputActionValue& Value)
 
 	Protocol::C_FIRE firePkt;
 	SEND_PACKET(firePkt);
+}
+
+void AS1MyPlayer::ChangeToGrenadeGun(const FInputActionValue& Value)
+{
+	bUsingGrenadeGun = true;
+	sniperGunComp->SetVisibility(false);
+	gunMeshComp->SetVisibility(true);
+}
+
+void AS1MyPlayer::ChangeToSniperGun(const FInputActionValue& Value)
+{
+	bUsingGrenadeGun = false;
+	sniperGunComp->SetVisibility(true);
+	gunMeshComp->SetVisibility(false);
+}
+
+void AS1MyPlayer::SniperAim(const FInputActionValue& Value)
+{
+	if (bUsingGrenadeGun)
+	{
+		return;
+	}
+
+	if (bSniperAim == false)
+	{
+		bSniperAim = true;
+		GetMesh()->SetVisibility(false);
+		sniperGunComp->SetVisibility(false);
+		_sniperUI->AddToViewport();
+		FollowCamera->SetFieldOfView(45.0f);
+	}
+	else
+	{
+		bSniperAim = false;
+		GetMesh()->SetVisibility(true);
+		sniperGunComp->SetVisibility(true);
+		_sniperUI->RemoveFromParent();
+		FollowCamera->SetFieldOfView(90.0f);
+	}
 }

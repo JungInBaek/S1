@@ -36,16 +36,12 @@ public:
 	void Move(const FInputActionValue& Value);
 	void LookUp(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
-	void Fire(const struct FInputActionValue& Value);
+	void Fire(const FInputActionValue& Value);
 
-protected:
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	void ChangeToGrenadeGun(const FInputActionValue& Value);
+	void ChangeToSniperGun(const FInputActionValue& Value);
 
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+	void SniperAim(const FInputActionValue& Value);
 
 protected:
 	/** MappingContext */
@@ -69,6 +65,25 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* ia_Fire;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_GrenadeGun;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_SniperGun;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_Sniper;
+
+
+protected:
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FollowCamera;
 	
 protected:
 	const float MOVE_PACKET_SEND_DELAY = 0.1f;
@@ -86,4 +101,14 @@ protected:
 	// dirty flag
 	FVector2D lastInput;
 	float lastYaw;
+
+public:
+	bool bUsingGrenadeGun = true;
+	bool bSniperAim = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
+	TSubclassOf<class UUserWidget> sniperUIFactory;
+
+	UPROPERTY()
+	class UUserWidget* _sniperUI;
 };
