@@ -31,12 +31,12 @@ public:
 
 	void Turn(float yaw);
 	void Fire();
-	void PlayerMove();
-
+	void PlayerMove(float DeltaTime);
 
 public:
 	void SetPlayerInfo(const Protocol::PosInfo& Info);
 	void SetMoveState(Protocol::MoveState State);
+
 	void SetDestInfo(const Protocol::PosInfo& Info);
 
 	Protocol::PosInfo* GetPlayerInfo() { return PlayerInfo; }
@@ -47,8 +47,6 @@ protected:
 	class Protocol::PosInfo* DestInfo;		// 목적지
 
 public:
-	FVector direction;
-
 	float rate = 45.0f;
 
 public:

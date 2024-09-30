@@ -225,9 +225,9 @@ void US1GameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 		return;
 	}
 
-	//Player->SetDestInfo(MovePkt.info());
-	Player->direction.X = MovePkt.info().x();
-	Player->direction.Y = MovePkt.info().y();
+	Player->SetDestInfo(MovePkt.info());
+	/*Player->direction.X = MovePkt.info().x();
+	Player->direction.Y = MovePkt.info().y();*/
 }
 
 void US1GameInstance::HandleFire(const Protocol::S_FIRE& FirePkt)

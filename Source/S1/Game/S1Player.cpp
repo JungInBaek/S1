@@ -13,6 +13,7 @@
 #include "S1MyPlayer.h"
 #include "Bullet.h"
 #include "S1.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 AS1Player::AS1Player()
@@ -43,12 +44,12 @@ AS1Player::AS1Player()
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
-	/*GetCharacterMovement()->JumpZVelocity = 700.f;
+	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	GetCharacterMovement()->bRunPhysicsWithNoController = true;*/
+	GetCharacterMovement()->bRunPhysicsWithNoController = true;
 
 	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
 	gunMeshComp->SetupAttachment(GetMesh());
@@ -58,8 +59,6 @@ AS1Player::AS1Player()
 		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
 		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
 	}
-
-	direction = FVector::ZeroVector;
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
@@ -75,7 +74,6 @@ AS1Player::~AS1Player()
 
 void AS1Player::BeginPlay()
 {
-	// Call the base class  
 	Super::BeginPlay();
 
 	{
@@ -100,7 +98,20 @@ void AS1Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	PlayerMove();
+	{
+		FVector Location = GetActorLocation();
+		PlayerInfo->set_x(Location.X);
+		PlayerInfo->set_y(Location.Y);
+		PlayerInfo->set_z(Location.Z);
+		PlayerInfo->set_yaw(GetControlRotation().Yaw);
+	}
+
+	if (IsMyPlayer())
+	{
+		return;
+	}
+
+	PlayerMove(DeltaTime);
 }
 
 bool AS1Player::IsMyPlayer()
@@ -124,11 +135,31 @@ void AS1Player::Fire()
 	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 }
 
-void AS1Player::PlayerMove()
+void AS1Player::PlayerMove(float DeltaTime)
 {
-	direction = FTransform(GetActorRotation()).TransformVector(direction);
+	/*direction = FTransform(GetActorRotation()).TransformVector(direction);
 	AddMovementInput(direction);
-	direction = FVector::ZeroVector;
+	direction = FVector::ZeroVector;*/
+
+	const Protocol::MoveState state = PlayerInfo->state();
+
+	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
+
+	if (state == Protocol::MOVE_STATE_RUN)
+	{
+		FVector location = GetActorLocation();
+		FVector destLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+
+		FVector direction = destLocation - location;
+		const float distanceToDest = direction.Length();
+		direction.Normalize();
+
+		float distance = (direction * 500.f * DeltaTime).Length();
+		distance = FMath::Min(distanceToDest, distance);
+		FVector nextLocation = location + direction * distance;
+
+		SetActorLocation(nextLocation);
+	}
 }
 
 void AS1Player::SetMoveState(Protocol::MoveState State)
@@ -164,6 +195,5 @@ void AS1Player::SetDestInfo(const Protocol::PosInfo& Info)
 	}
 
 	DestInfo->CopyFrom(Info);
-
 	SetMoveState(Info.state());
 }

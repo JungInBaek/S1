@@ -71,11 +71,11 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 
 		// Jumping
 		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		//EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(ia_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
 		EnhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Triggered, this, &AS1MyPlayer::Move);
-		//EnhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Completed, this, &AS1MyPlayer::Move);
+		EnhancedInputComponent->BindAction(ia_Move, ETriggerEvent::Completed, this, &AS1MyPlayer::Move);
 
 		// Looking
 		EnhancedInputComponent->BindAction(ia_LookUp, ETriggerEvent::Triggered, this, &AS1MyPlayer::LookUp);
@@ -89,23 +89,49 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 void AS1MyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// 패킷 Send 판정
+	bool forceSendPacket = false;
+	if (lastInput != input)
+	{
+		forceSendPacket = true;
+		lastInput = input;
+	}
+
+	// state 정보
+	if (input == FVector2D::Zero())
+	{
+		SetMoveState(Protocol::MOVE_STATE_IDLE);
+	}
+	else
+	{
+		SetMoveState(Protocol::MOVE_STATE_RUN);
+	}
+
+	MovePacketSendTimer -= DeltaTime;
+
+	if (forceSendPacket || MovePacketSendTimer <= 0)
+	{
+		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+
+		Protocol::C_MOVE MovePkt;
+		{
+			Protocol::PosInfo* Info = MovePkt.mutable_info();
+			Info->CopyFrom(*PlayerInfo);
+			Info->set_yaw(yaw);
+			Info->set_state(GetMoveState());
+		}
+		SEND_PACKET(MovePkt);
+	}
 }
 
 void AS1MyPlayer::Move(const FInputActionValue& Value)
 {
-	FVector2D value = Value.Get<FVector2D>();
-	direction.X = value.X;
-	direction.Y = value.Y;
+	input = Value.Get<FVector2D>();
+	direction.X = input.X;
+	direction.Y = input.Y;
 
-	Protocol::C_MOVE MovePkt;
-	{
-		Protocol::PosInfo* Info = MovePkt.mutable_info();
-		Info->CopyFrom(*PlayerInfo);
-		Info->set_x(direction.X);
-		Info->set_y(direction.Y);
-		Info->set_state(GetMoveState());
-	}
-	SEND_PACKET(MovePkt);
+	AddMovementInput(FTransform(GetActorRotation()).TransformVector(direction));
 }
 
 void AS1MyPlayer::LookUp(const FInputActionValue& Value)
@@ -123,12 +149,15 @@ void AS1MyPlayer::Turn(const FInputActionValue& Value)
 	value *= rate;
 	AddControllerYawInput(value);
 
-	const uint64 objectId = PlayerInfo->object_id();
+	yaw = GetControlRotation().Yaw;
+	/*const uint64 objectId = PlayerInfo->object_id();
 
-	Protocol::C_TURN turnPkt;
-	turnPkt.set_object_id(objectId);
-	turnPkt.set_yaw(GetControlRotation().Yaw);
-	SEND_PACKET(turnPkt);
+	{
+		Protocol::C_TURN turnPkt;
+		turnPkt.set_object_id(objectId);
+		turnPkt.set_yaw(yaw);
+		SEND_PACKET(turnPkt);
+	}*/
 }
 
 void AS1MyPlayer::Fire(const FInputActionValue& Value)

@@ -28,6 +28,8 @@ ABullet::ABullet()
 	movementComp->MaxSpeed = 5000;
 	movementComp->bShouldBounce = true;
 	movementComp->Bounciness = 0.3f;
+
+	InitialLifeSpan = 2.0f;
 }
 
 // Called when the game starts or when spawned
