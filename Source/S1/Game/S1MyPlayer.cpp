@@ -15,6 +15,7 @@
 #include "Bullet.h"
 #include "S1.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AS1MyPlayer::AS1MyPlayer()
@@ -188,11 +189,49 @@ void AS1MyPlayer::Turn(const FInputActionValue& Value)
 
 void AS1MyPlayer::Fire(const FInputActionValue& Value)
 {
-	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
-	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+	if (bUsingGrenadeGun)
+	{
+		FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
+		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 
-	Protocol::C_FIRE firePkt;
-	SEND_PACKET(firePkt);
+		Protocol::C_FIRE firePkt;
+		SEND_PACKET(firePkt);
+	}
+	else
+	{
+		FVector startPos = FollowCamera->GetComponentLocation();
+		FVector endPos = startPos + FollowCamera->GetForwardVector() * 5000;
+		
+		// LineTrace 충돌 정보 변수
+		FHitResult hitInfo;
+
+		// 충돌 옵션 설정 변수
+		FCollisionQueryParams params;
+
+		// MyPlayer 충돌 제외
+		params.AddIgnoredActor(this);
+
+		bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+		if (bHit)
+		{
+			FTransform bulletTrans;
+			bulletTrans.SetLocation(hitInfo.ImpactPoint);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
+
+			// 충돌 물리 계산
+			auto hitComp = hitInfo.GetComponent();
+			if (hitComp && hitComp->IsSimulatingPhysics())
+			{
+				// 조준 방향
+				FVector dir = (endPos - startPos).GetSafeNormal();
+
+				// 날리는 힘(F = ma)
+				FVector force = dir * hitComp->GetMass() * 50000;
+
+				hitComp->AddForceAtLocation(force, hitInfo.ImpactPoint);
+			}
+		}
+	}
 }
 
 void AS1MyPlayer::ChangeToGrenadeGun(const FInputActionValue& Value)

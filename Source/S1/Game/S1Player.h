@@ -59,4 +59,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = GunMesh)
 	class UStaticMeshComponent* sniperGunComp;
+
+	UPROPERTY(EditAnywhere, Category = BulletEffect)
+	class UParticleSystem* bulletEffectFactory;
 };
