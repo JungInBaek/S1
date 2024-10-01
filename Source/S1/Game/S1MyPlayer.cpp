@@ -236,6 +236,14 @@ void AS1MyPlayer::Fire(const FInputActionValue& Value)
 
 void AS1MyPlayer::ChangeToGrenadeGun(const FInputActionValue& Value)
 {
+	if (bSniperAim == true)
+	{
+		bSniperAim = false;
+		GetMesh()->SetVisibility(true);
+		sniperGunComp->SetVisibility(true);
+		_sniperUI->RemoveFromParent();
+		FollowCamera->SetFieldOfView(90.0f);
+	}
 	bUsingGrenadeGun = true;
 	sniperGunComp->SetVisibility(false);
 	gunMeshComp->SetVisibility(true);
