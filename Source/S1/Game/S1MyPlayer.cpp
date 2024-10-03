@@ -63,6 +63,8 @@ void AS1MyPlayer::BeginPlay()
 	}
 
 	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
+	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
+	_crosshairUI->AddToViewport();
 
 	ChangeToSniperGun(FInputActionValue());
 }
@@ -291,6 +293,7 @@ void AS1MyPlayer::SniperAim(const FInputActionValue& Value)
 		bSniperAim = true;
 		GetMesh()->SetVisibility(false);
 		sniperGunComp->SetVisibility(false);
+		_crosshairUI->RemoveFromParent();
 		_sniperUI->AddToViewport();
 		FollowCamera->SetFieldOfView(45.0f);
 	}
@@ -299,6 +302,7 @@ void AS1MyPlayer::SniperAim(const FInputActionValue& Value)
 		bSniperAim = false;
 		GetMesh()->SetVisibility(true);
 		sniperGunComp->SetVisibility(true);
+		_crosshairUI->AddToViewport();
 		_sniperUI->RemoveFromParent();
 		FollowCamera->SetFieldOfView(90.0f);
 	}

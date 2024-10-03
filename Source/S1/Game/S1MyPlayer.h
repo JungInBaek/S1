@@ -111,4 +111,10 @@ public:
 
 	UPROPERTY()
 	class UUserWidget* _sniperUI;
+
+	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
+	TSubclassOf<class UUserWidget> crosshairUIFactory;
+
+	UPROPERTY()
+	class UUserWidget* _crosshairUI;
 };
