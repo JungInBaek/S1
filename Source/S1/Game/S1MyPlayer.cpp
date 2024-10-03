@@ -133,7 +133,7 @@ void AS1MyPlayer::Tick(float DeltaTime)
 		Protocol::C_MOVE MovePkt;
 		{
 			Protocol::PosInfo* Info = MovePkt.mutable_info();
-			Info->CopyFrom(*PlayerInfo);
+			Info->CopyFrom(*ObjectInfo);
 			Info->set_yaw(yaw);
 			Info->set_state(GetMoveState());
 		}
@@ -233,7 +233,7 @@ void AS1MyPlayer::Fire(const FInputActionValue& Value)
 		}
 
 		Protocol::C_SNIPER_FIRE firePkt;
-		firePkt.set_object_id(PlayerInfo->object_id());
+		firePkt.set_object_id(ObjectInfo->object_id());
 
 		Protocol::VectorInfo* start = firePkt.mutable_start();
 		start->set_x(startPos.X);
@@ -264,7 +264,7 @@ void AS1MyPlayer::ChangeToGrenadeGun(const FInputActionValue& Value)
 	gunMeshComp->SetVisibility(true);
 
 	Protocol::C_CHANGE_ITEM changePkt;
-	changePkt.set_object_id(PlayerInfo->object_id());
+	changePkt.set_object_id(ObjectInfo->object_id());
 	changePkt.set_key(uint8(1));
 	SEND_PACKET(changePkt);
 }
@@ -276,7 +276,7 @@ void AS1MyPlayer::ChangeToSniperGun(const FInputActionValue& Value)
 	gunMeshComp->SetVisibility(false);
 
 	Protocol::C_CHANGE_ITEM changePkt;
-	changePkt.set_object_id(PlayerInfo->object_id());
+	changePkt.set_object_id(ObjectInfo->object_id());
 	changePkt.set_key(uint8(2));
 	SEND_PACKET(changePkt);
 }

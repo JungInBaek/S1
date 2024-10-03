@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include "Protocol.pb.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Enermy.generated.h"
+
 
 UCLASS()
 class S1_API AEnermy : public ACharacter
@@ -26,4 +28,15 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+public:
+	void SetObjectInfo(const Protocol::PosInfo& Info);
+
+public:
+	class Protocol::PosInfo* ObjectInfo;	// 현재 오브젝트 정보
+	class Protocol::PosInfo* DestInfo;		// 목적지
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
+	class UEnermyFSM* fsm;
 };

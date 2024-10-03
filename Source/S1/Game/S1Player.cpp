@@ -72,7 +72,7 @@ AS1Player::AS1Player()
 	}
 
 
-	PlayerInfo = new Protocol::PosInfo();
+	ObjectInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
 
 	change2();
@@ -82,9 +82,9 @@ AS1Player::AS1Player()
 
 AS1Player::~AS1Player()
 {
-	delete PlayerInfo;
+	delete ObjectInfo;
 	delete DestInfo;
-	PlayerInfo = nullptr;
+	ObjectInfo = nullptr;
 	DestInfo = nullptr;
 }
 
@@ -117,11 +117,11 @@ void AS1Player::Tick(float DeltaTime)
 
 	{
 		FVector Location = GetActorLocation();
-		Protocol::VectorInfo* vectorInfo = PlayerInfo->mutable_vector_info();
+		Protocol::VectorInfo* vectorInfo = ObjectInfo->mutable_vector_info();
 		vectorInfo->set_x(Location.X);
 		vectorInfo->set_y(Location.Y);
 		vectorInfo->set_z(Location.Z);
-		PlayerInfo->set_yaw(GetControlRotation().Yaw);
+		ObjectInfo->set_yaw(GetControlRotation().Yaw);
 	}
 
 	if (IsMyPlayer())
@@ -201,7 +201,7 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;*/
 
-	const Protocol::MoveState state = PlayerInfo->state();
+	const Protocol::MoveState state = ObjectInfo->state();
 
 	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
 
@@ -250,24 +250,24 @@ void AS1Player::change2()
 
 void AS1Player::SetMoveState(Protocol::MoveState State)
 {
-	if (PlayerInfo->state() == State)
+	if (ObjectInfo->state() == State)
 	{
 		return;
 	}
 
-	PlayerInfo->set_state(State);
+	ObjectInfo->set_state(State);
 
 	// TODO
 }
 
-void AS1Player::SetPlayerInfo(const Protocol::PosInfo& Info)
+void AS1Player::SetObjectInfo(const Protocol::PosInfo& Info)
 {
-	if (PlayerInfo->object_id() != 0)
+	if (ObjectInfo->object_id() != 0)
 	{
-		assert(PlayerInfo->object_id() == Info.object_id());
+		assert(ObjectInfo->object_id() == Info.object_id());
 	}
 
-	PlayerInfo->CopyFrom(Info);
+	ObjectInfo->CopyFrom(Info);
 
 	Protocol::VectorInfo vectorInfo = Info.vector_info();
 	FVector Location(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
@@ -276,9 +276,9 @@ void AS1Player::SetPlayerInfo(const Protocol::PosInfo& Info)
 
 void AS1Player::SetDestInfo(const Protocol::PosInfo& Info)
 {
-	if (PlayerInfo->object_id() != 0)
+	if (ObjectInfo->object_id() != 0)
 	{
-		assert(PlayerInfo->object_id() == Info.object_id());
+		assert(ObjectInfo->object_id() == Info.object_id());
 	}
 
 	DestInfo->CopyFrom(Info);

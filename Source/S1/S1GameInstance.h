@@ -9,6 +9,7 @@
 
 
 class AS1Player;
+class AEnermy;
 
 
 UCLASS()
@@ -29,8 +30,9 @@ public:
 	void SendPacket(SendBufferRef SendBuffer);
 
 public:
-	void HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool IsMine);
-	void HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt);
+	void HandleSpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool IsMine);
+	void HandleSpawnPlayer(const Protocol::S_ENTER_GAME& EnterGamePkt);
+	void HandleSpawnEnermy(const Protocol::ObjectInfo& ObjectInfo);
 	void HandleSpawn(const Protocol::S_SPAWN& SpawnPkt);
 
 	void HandleDespawn(uint64 ObjectId);
@@ -56,4 +58,9 @@ public:
 
 	AS1Player* MyPlayer;
 	TMap<uint64, AS1Player*> Players;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AEnermy> EnermyClass;
+
+	TMap<uint64, AEnermy*> Enermys;
 };

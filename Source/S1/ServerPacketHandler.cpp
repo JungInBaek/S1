@@ -32,7 +32,7 @@ bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
     // TODO: 조건문 수정
     if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
     {
-        GameInstance->HandleSpawn(pkt);
+        GameInstance->HandleSpawnPlayer(pkt);
     }
 
     return true;

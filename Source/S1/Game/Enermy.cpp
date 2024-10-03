@@ -2,6 +2,8 @@
 
 
 #include "Game/Enermy.h"
+#include "EnermyFSM.h"
+
 
 // Sets default values
 AEnermy::AEnermy()
@@ -15,6 +17,11 @@ AEnermy::AEnermy()
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
+
+	ObjectInfo = new Protocol::PosInfo();
+	DestInfo = new Protocol::PosInfo();
+
+	fsm = CreateDefaultSubobject<UEnermyFSM>(TEXT("FSM"));
 }
 
 // Called when the game starts or when spawned
@@ -36,5 +43,19 @@ void AEnermy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AEnermy::SetObjectInfo(const Protocol::PosInfo& Info)
+{
+	if (ObjectInfo->object_id() != 0)
+	{
+		assert(ObjectInfo->object_id() == Info.object_id());
+	}
+
+	ObjectInfo->CopyFrom(Info);
+
+	Protocol::VectorInfo vectorInfo = Info.vector_info();
+	FVector Location(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
+	SetActorLocation(Location);
 }
 

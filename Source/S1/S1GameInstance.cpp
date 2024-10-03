@@ -10,6 +10,7 @@
 #include "Protocol.pb.h"
 #include "ServerPacketHandler.h"
 #include "S1MyPlayer.h"
+#include "Enermy.h"
 #include "S1.h"
 
 
@@ -80,7 +81,7 @@ void US1GameInstance::SendPacket(SendBufferRef SendBuffer)
 }
 
 
-void US1GameInstance::HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool IsMine)
+void US1GameInstance::HandleSpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, bool IsMine)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
 	{
@@ -112,28 +113,77 @@ void US1GameInstance::HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool I
 			return;
 		}
 
-		Player->SetPlayerInfo(PosInfo);
+		Player->SetObjectInfo(PosInfo);
 		MyPlayer = Player;
 		Players.Add(ObjectInfo.object_id(), Player);
 	}
 	else
 	{
-		AS1Player* Player = Cast<AS1Player>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
-		Player->SetPlayerInfo(PosInfo);
-		Players.Add(ObjectInfo.object_id(), Player);
+		if (AS1Player* Player = Cast<AS1Player>(World->SpawnActor(OtherPlayerClass, &SpawnLocation)))
+		{
+			Player->SetObjectInfo(PosInfo);
+			Players.Add(ObjectInfo.object_id(), Player);
+		}
 	}
 }
 
-void US1GameInstance::HandleSpawn(const Protocol::S_ENTER_GAME& EnterGamePkt)
+void US1GameInstance::HandleSpawnPlayer(const Protocol::S_ENTER_GAME& EnterGamePkt)
 {
-	HandleSpawn(EnterGamePkt.player(), true);
+	HandleSpawnPlayer(EnterGamePkt.player(), true);
+}
+
+void US1GameInstance::HandleSpawnEnermy(const Protocol::ObjectInfo& ObjectInfo)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	// 중복 처리 체크
+	const uint64 ObjectId = ObjectInfo.object_id();
+	if (Players.Find(ObjectId) != nullptr)
+	{
+		return;
+	}
+
+	const Protocol::PosInfo& PosInfo = ObjectInfo.pos_info();
+	FVector SpawnLocation(PosInfo.vector_info().x(), PosInfo.vector_info().y(), PosInfo.vector_info().z());
+	if (AEnermy* Enermy = Cast<AEnermy>(World->SpawnActor(EnermyClass, &SpawnLocation)))
+	{
+		Enermy->SetObjectInfo(PosInfo);
+		Enermys.Add(ObjectInfo.object_id(), Enermy);
+	}
 }
 
 void US1GameInstance::HandleSpawn(const Protocol::S_SPAWN& SpawnPkt)
 {
-	for (auto& Player : SpawnPkt.players())
+	for (auto& object : SpawnPkt.objects())
 	{
-		HandleSpawn(Player, false);
+		Protocol::ObjectType objectType = object.object_type();
+		switch (objectType)
+		{
+		case Protocol::OBJECT_TYPE_CREATURE:
+			Protocol::CreatureType creatureType = object.creature_type();
+			switch (creatureType)
+			{
+			case Protocol::CREATURE_TYPE_PLAYER:
+				HandleSpawnPlayer(object, false);
+				break;
+			case Protocol::CREATURE_TYPE_NPC:
+				break;
+			case Protocol::CREATURE_TYPE_MONSTER:
+				break;
+			case Protocol::CREATURE_TYPE_ENERMY:
+				HandleSpawnEnermy(object);
+			}
+			break;
+		}
 	}
 }
 
