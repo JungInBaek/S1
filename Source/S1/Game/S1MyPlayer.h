@@ -106,9 +106,6 @@ protected:
 	float lastYaw;
 
 public:
-	bool bUsingGrenadeGun = true;
-	bool bSniperAim = false;
-
 	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
 	TSubclassOf<class UUserWidget> sniperUIFactory;
 

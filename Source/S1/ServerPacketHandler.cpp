@@ -113,3 +113,12 @@ bool Handle_S_FIRE(PacketSessionRef& session, Protocol::S_FIRE& pkt)
     }
     return true;
 }
+
+bool Handle_S_CHANGE_ITEM(PacketSessionRef& session, Protocol::S_CHANGE_ITEM& pkt)
+{
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleChangeItem(pkt);
+    }
+    return false;
+}

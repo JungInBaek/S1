@@ -90,7 +90,6 @@ message S_CHAT
 	string msg = 2;
 }
 
-
 message C_FIRE
 {
 	
@@ -99,4 +98,16 @@ message C_FIRE
 message S_FIRE
 {
 	uint64 object_id = 1;
+}
+
+message C_CHANGE_ITEM
+{
+	uint64 object_id = 1;
+	uint32 key = 2;
+}
+
+message S_CHANGE_ITEM
+{
+	uint64 object_id = 1;
+	uint32 key = 2;
 }

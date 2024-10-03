@@ -74,6 +74,10 @@ AS1Player::AS1Player()
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
+
+	change2();
+	changeItemKey[1] = [this]() { change1(); };
+	changeItemKey[2] = [this]() { change2(); };
 }
 
 AS1Player::~AS1Player()
@@ -143,8 +147,11 @@ void AS1Player::Turn(float yaw)
 
 void AS1Player::Fire()
 {
-	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
-	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+	if (bUsingGrenadeGun)
+	{
+		FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
+		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+	}
 }
 
 void AS1Player::PlayerMoveTick(float DeltaTime)
@@ -169,6 +176,7 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 		float distance = (direction * 600.f * DeltaTime).Length();
 		distance = FMath::Min(distanceToDest, distance);
 		FVector nextLocation = location + direction * distance;
+		nextLocation.Z = DestInfo->z();
 
 		SetActorLocation(nextLocation);
 	}
@@ -177,6 +185,25 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 void AS1Player::Jump()
 {
 	Super::Jump();
+}
+
+void AS1Player::ChangeItem(uint8 key)
+{
+	changeItemKey[key]();
+}
+
+void AS1Player::change1()
+{
+	bUsingGrenadeGun = true;
+	sniperGunComp->SetVisibility(false);
+	gunMeshComp->SetVisibility(true);
+}
+
+void AS1Player::change2()
+{
+	bUsingGrenadeGun = false;
+	sniperGunComp->SetVisibility(true);
+	gunMeshComp->SetVisibility(false);
 }
 
 void AS1Player::SetMoveState(Protocol::MoveState State)

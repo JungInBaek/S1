@@ -143,8 +143,6 @@ void AS1MyPlayer::Jump(const FInputActionValue& Value)
 {
 	Super::Jump();
 	jumpInput = Value.Get<float>();
-
-	
 }
 
 void AS1MyPlayer::StopJumping(const FInputActionValue& Value)
@@ -231,6 +229,9 @@ void AS1MyPlayer::Fire(const FInputActionValue& Value)
 				hitComp->AddForceAtLocation(force, hitInfo.ImpactPoint);
 			}
 		}
+
+		// 시작 위치, 종료 위치, 조준 방향 전송
+
 	}
 }
 
@@ -247,6 +248,11 @@ void AS1MyPlayer::ChangeToGrenadeGun(const FInputActionValue& Value)
 	bUsingGrenadeGun = true;
 	sniperGunComp->SetVisibility(false);
 	gunMeshComp->SetVisibility(true);
+
+	Protocol::C_CHANGE_ITEM changePkt;
+	changePkt.set_object_id(PlayerInfo->object_id());
+	changePkt.set_key(uint8(1));
+	SEND_PACKET(changePkt);
 }
 
 void AS1MyPlayer::ChangeToSniperGun(const FInputActionValue& Value)
@@ -254,6 +260,11 @@ void AS1MyPlayer::ChangeToSniperGun(const FInputActionValue& Value)
 	bUsingGrenadeGun = false;
 	sniperGunComp->SetVisibility(true);
 	gunMeshComp->SetVisibility(false);
+
+	Protocol::C_CHANGE_ITEM changePkt;
+	changePkt.set_object_id(PlayerInfo->object_id());
+	changePkt.set_key(uint8(2));
+	SEND_PACKET(changePkt);
 }
 
 void AS1MyPlayer::SniperAim(const FInputActionValue& Value)

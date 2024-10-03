@@ -250,7 +250,7 @@ void US1GameInstance::HandleJump(const Protocol::S_JUMP& JumpPkt)
 		return;
 	}
 
-	player->Jump();
+	//player->Jump();
 }
 
 void US1GameInstance::HandleFire(const Protocol::S_FIRE& FirePkt)
@@ -274,4 +274,27 @@ void US1GameInstance::HandleFire(const Protocol::S_FIRE& FirePkt)
 	}
 
 	player->Fire();
+}
+
+void US1GameInstance::HandleChangeItem(const Protocol::S_CHANGE_ITEM& changePkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	const uint64 objectId = changePkt.object_id();
+	AS1Player** FindPlayer = Players.Find(objectId);
+	if (FindPlayer == nullptr)
+	{
+		return;
+	}
+
+	AS1Player* player = *FindPlayer;
+	if (player->IsMyPlayer())
+	{
+		return;
+	}
+
+	player->ChangeItem(changePkt.key());
 }

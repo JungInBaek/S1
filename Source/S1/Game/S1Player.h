@@ -33,6 +33,7 @@ public:
 	void Fire();
 	void PlayerMoveTick(float DeltaTime);
 	void Jump();
+	void ChangeItem(uint8 key);
 
 public:
 	void SetPlayerInfo(const Protocol::PosInfo& Info);
@@ -62,4 +63,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = BulletEffect)
 	class UParticleSystem* bulletEffectFactory;
+
+public:
+	std::function<void()> changeItemKey[UINT8_MAX];
+	void change1();
+	void change2();
+
+	bool bUsingGrenadeGun = true;
+	bool bSniperAim = false;
 };

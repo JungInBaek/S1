@@ -40,6 +40,7 @@ public:
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
 	void HandleFire(const Protocol::S_FIRE& FirePkt);
+	void HandleChangeItem(const Protocol::S_CHANGE_ITEM& changePkt);
 	
 public:
 	// Game Server
