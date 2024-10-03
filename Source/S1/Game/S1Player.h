@@ -31,6 +31,7 @@ public:
 
 	void Turn(float yaw);
 	void Fire();
+	void SniperFire(const Protocol::S_SNIPER_FIRE& FirePkt);
 	void PlayerMoveTick(float DeltaTime);
 	void Jump();
 	void ChangeItem(uint8 key);

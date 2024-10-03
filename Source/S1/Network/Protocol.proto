@@ -100,6 +100,20 @@ message S_FIRE
 	uint64 object_id = 1;
 }
 
+message C_SNIPER_FIRE
+{
+	uint64 object_id = 1;
+	VectorInfo start = 2;
+	VectorInfo end = 3;
+}
+
+message S_SNIPER_FIRE
+{
+	uint64 object_id = 1;
+	VectorInfo start = 2;
+	VectorInfo end = 3;
+}
+
 message C_CHANGE_ITEM
 {
 	uint64 object_id = 1;

@@ -114,11 +114,20 @@ bool Handle_S_FIRE(PacketSessionRef& session, Protocol::S_FIRE& pkt)
     return true;
 }
 
+bool Handle_S_SNIPER_FIRE(PacketSessionRef& session, Protocol::S_SNIPER_FIRE& pkt)
+{
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleSniperFire(pkt);
+    }
+    return true;
+}
+
 bool Handle_S_CHANGE_ITEM(PacketSessionRef& session, Protocol::S_CHANGE_ITEM& pkt)
 {
     if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
     {
         GameInstance->HandleChangeItem(pkt);
     }
-    return false;
+    return true;
 }

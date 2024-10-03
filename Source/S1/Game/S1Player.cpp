@@ -94,9 +94,10 @@ void AS1Player::BeginPlay()
 
 	{
 		FVector Location = GetActorLocation();
-		DestInfo->set_x(Location.X);
-		DestInfo->set_y(Location.Y);
-		DestInfo->set_z(Location.Z);
+		Protocol::VectorInfo* vectorInfo = DestInfo->mutable_vector_info();
+		vectorInfo->set_x(Location.X);
+		vectorInfo->set_y(Location.Y);
+		vectorInfo->set_z(Location.Z);
 		DestInfo->set_yaw(GetControlRotation().Yaw);
 
 		SetMoveState(Protocol::MOVE_STATE_IDLE);
@@ -116,9 +117,10 @@ void AS1Player::Tick(float DeltaTime)
 
 	{
 		FVector Location = GetActorLocation();
-		PlayerInfo->set_x(Location.X);
-		PlayerInfo->set_y(Location.Y);
-		PlayerInfo->set_z(Location.Z);
+		Protocol::VectorInfo* vectorInfo = PlayerInfo->mutable_vector_info();
+		vectorInfo->set_x(Location.X);
+		vectorInfo->set_y(Location.Y);
+		vectorInfo->set_z(Location.Z);
 		PlayerInfo->set_yaw(GetControlRotation().Yaw);
 	}
 
@@ -154,6 +156,45 @@ void AS1Player::Fire()
 	}
 }
 
+void AS1Player::SniperFire(const Protocol::S_SNIPER_FIRE& FirePkt)
+{
+	if (bUsingGrenadeGun == false)
+	{
+		FVector startPos(FirePkt.start().x(), FirePkt.start().y(), FirePkt.start().z());
+		FVector endPos(FirePkt.end().x(), FirePkt.end().y(), FirePkt.end().z());
+
+		// LineTrace 충돌 정보 변수
+		FHitResult hitInfo;
+
+		// 충돌 옵션 설정 변수
+		FCollisionQueryParams params;
+
+		// MyPlayer 충돌 제외
+		params.AddIgnoredActor(this);
+
+		bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+		if (bHit)
+		{
+			FTransform bulletTrans;
+			bulletTrans.SetLocation(hitInfo.ImpactPoint);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
+
+			// 충돌 물리 계산
+			auto hitComp = hitInfo.GetComponent();
+			if (hitComp && hitComp->IsSimulatingPhysics())
+			{
+				// 조준 방향
+				FVector dir = (endPos - startPos).GetSafeNormal();
+
+				// 날리는 힘(F = ma)
+				FVector force = dir * hitComp->GetMass() * 50000;
+
+				hitComp->AddForceAtLocation(force, hitInfo.ImpactPoint);
+			}
+		}
+	}
+}
+
 void AS1Player::PlayerMoveTick(float DeltaTime)
 {
 	/*direction = FTransform(GetActorRotation()).TransformVector(direction);
@@ -166,8 +207,9 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 
 	//if (state == Protocol::MOVE_STATE_RUN)
 	{
+		Protocol::VectorInfo* vectorInfo = DestInfo->mutable_vector_info();
 		FVector location = GetActorLocation();
-		FVector destLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
+		FVector destLocation = FVector(vectorInfo->x(), vectorInfo->y(), vectorInfo->z());
 
 		FVector direction = destLocation - location;
 		const float distanceToDest = direction.Length();
@@ -176,7 +218,7 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 		float distance = (direction * 600.f * DeltaTime).Length();
 		distance = FMath::Min(distanceToDest, distance);
 		FVector nextLocation = location + direction * distance;
-		nextLocation.Z = DestInfo->z();
+		nextLocation.Z = vectorInfo->z();
 
 		SetActorLocation(nextLocation);
 	}
@@ -227,7 +269,8 @@ void AS1Player::SetPlayerInfo(const Protocol::PosInfo& Info)
 
 	PlayerInfo->CopyFrom(Info);
 
-	FVector Location(Info.x(), Info.y(), Info.z());
+	Protocol::VectorInfo vectorInfo = Info.vector_info();
+	FVector Location(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
 	SetActorLocation(Location);
 }
 

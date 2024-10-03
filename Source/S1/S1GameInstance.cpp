@@ -101,7 +101,7 @@ void US1GameInstance::HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool I
 	}
 
 	const Protocol::PosInfo& PosInfo = ObjectInfo.pos_info();
-	FVector SpawnLocation(PosInfo.x(), PosInfo.y(), PosInfo.z());
+	FVector SpawnLocation(PosInfo.vector_info().x(), PosInfo.vector_info().y(), PosInfo.vector_info().z());
 
 	if (IsMine)
 	{
@@ -276,14 +276,14 @@ void US1GameInstance::HandleFire(const Protocol::S_FIRE& FirePkt)
 	player->Fire();
 }
 
-void US1GameInstance::HandleChangeItem(const Protocol::S_CHANGE_ITEM& changePkt)
+void US1GameInstance::HandleSniperFire(const Protocol::S_SNIPER_FIRE& FirePkt)
 {
 	if (Socket == nullptr || GameServerSession == nullptr)
 	{
 		return;
 	}
 
-	const uint64 objectId = changePkt.object_id();
+	const uint64 objectId = FirePkt.object_id();
 	AS1Player** FindPlayer = Players.Find(objectId);
 	if (FindPlayer == nullptr)
 	{
@@ -296,5 +296,28 @@ void US1GameInstance::HandleChangeItem(const Protocol::S_CHANGE_ITEM& changePkt)
 		return;
 	}
 
-	player->ChangeItem(changePkt.key());
+	player->SniperFire(FirePkt);
+}
+
+void US1GameInstance::HandleChangeItem(const Protocol::S_CHANGE_ITEM& ChangePkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	const uint64 objectId = ChangePkt.object_id();
+	AS1Player** FindPlayer = Players.Find(objectId);
+	if (FindPlayer == nullptr)
+	{
+		return;
+	}
+
+	AS1Player* player = *FindPlayer;
+	if (player->IsMyPlayer())
+	{
+		return;
+	}
+
+	player->ChangeItem(ChangePkt.key());
 }

@@ -230,8 +230,20 @@ void AS1MyPlayer::Fire(const FInputActionValue& Value)
 			}
 		}
 
-		// 시작 위치, 종료 위치, 조준 방향 전송
+		Protocol::C_SNIPER_FIRE firePkt;
+		firePkt.set_object_id(PlayerInfo->object_id());
 
+		Protocol::VectorInfo* start = firePkt.mutable_start();
+		start->set_x(startPos.X);
+		start->set_y(startPos.Y);
+		start->set_z(startPos.Z);
+
+		Protocol::VectorInfo* end = firePkt.mutable_end();
+		end->set_x(endPos.X);
+		end->set_y(endPos.Y);
+		end->set_z(endPos.Z);
+
+		SEND_PACKET(firePkt);
 	}
 }
 
