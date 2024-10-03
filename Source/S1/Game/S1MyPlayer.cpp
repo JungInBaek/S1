@@ -26,7 +26,7 @@ AS1MyPlayer::AS1MyPlayer()
 	if (TempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(TempMesh.Object);
-		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
+		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
