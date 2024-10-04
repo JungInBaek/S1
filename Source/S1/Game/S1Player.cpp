@@ -14,6 +14,7 @@
 #include "Bullet.h"
 #include "S1.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "EnermyFSM.h"
 
 
 AS1Player::AS1Player()
@@ -190,6 +191,13 @@ void AS1Player::SniperFire(const Protocol::S_SNIPER_FIRE& FirePkt)
 				FVector force = dir * hitComp->GetMass() * 50000;
 
 				hitComp->AddForceAtLocation(force, hitInfo.ImpactPoint);
+			}
+
+			auto enermy = hitInfo.GetActor()->GetDefaultSubobjectByName(TEXT("FSM"));
+			if (enermy)
+			{
+				auto enermyFSM = Cast<UEnermyFSM>(enermy);
+				enermyFSM->OnDamageProcess();
 			}
 		}
 	}

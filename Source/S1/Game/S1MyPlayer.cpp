@@ -16,6 +16,7 @@
 #include "S1.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "EnermyFSM.h"
 
 
 AS1MyPlayer::AS1MyPlayer()
@@ -229,6 +230,13 @@ void AS1MyPlayer::Fire(const FInputActionValue& Value)
 				FVector force = dir * hitComp->GetMass() * 50000;
 
 				hitComp->AddForceAtLocation(force, hitInfo.ImpactPoint);
+			}
+
+			auto enermy = hitInfo.GetActor()->GetDefaultSubobjectByName(TEXT("FSM"));
+			if (enermy)
+			{
+				auto enermyFSM = Cast<UEnermyFSM>(enermy);
+				enermyFSM->OnDamageProcess();
 			}
 		}
 

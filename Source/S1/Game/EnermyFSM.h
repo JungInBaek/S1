@@ -45,4 +45,34 @@ public:
 	void AttackState();
 	void DamageState();
 	void DieState();
+
+public:
+	void OnDamageProcess();
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = FSM)
+	float idleDelayTime = 2;
+
+	float currentTime = 0;
+
+	UPROPERTY(VisibleAnywhere, Category = FSM)
+	class AS1Player* target;
+
+	UPROPERTY()
+	class AEnermy* me;
+
+	UPROPERTY(EditAnywhere, Category = FSM)
+	float attackRange = 100.0f;
+
+	UPROPERTY(EditAnywhere, Category = FSM)
+	float attackDelayTime = 2.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+	int32 hp = 100;
+
+	UPROPERTY(EditAnywhere, Category = FSM)
+	float damageDelayTime = 2.0f;
+
+	UPROPERTY(EditAnywhere, Category = FSM)
+	float dieSpeed = 50.0f;
 };

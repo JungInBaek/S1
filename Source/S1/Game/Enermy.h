@@ -32,6 +32,8 @@ public:
 public:
 	void SetObjectInfo(const Protocol::PosInfo& Info);
 
+	Protocol::PosInfo* GetObjectInfo() { return ObjectInfo; }
+
 public:
 	class Protocol::PosInfo* ObjectInfo;	// 현재 오브젝트 정보
 	class Protocol::PosInfo* DestInfo;		// 목적지
