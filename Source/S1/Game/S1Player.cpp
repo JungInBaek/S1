@@ -21,7 +21,7 @@ AS1Player::AS1Player()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/AnimStarterPack/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (TempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(TempMesh.Object);
@@ -209,7 +209,7 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;*/
 
-	const Protocol::MoveState state = ObjectInfo->state();
+	//const Protocol::MoveState state = ObjectInfo->state();
 
 	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
 
