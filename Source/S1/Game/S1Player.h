@@ -46,6 +46,7 @@ public:
 	Protocol::MoveState GetMoveState() { return ObjectInfo->state(); }
 
 protected:
+	class Protocol::PosInfo* LastInfo;		// 지난 오브젝트 정보
 	class Protocol::PosInfo* ObjectInfo;	// 현재 오브젝트 정보
 	class Protocol::PosInfo* DestInfo;		// 목적지
 

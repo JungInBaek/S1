@@ -108,7 +108,7 @@ void AS1MyPlayer::Tick(float DeltaTime)
 
 	// 패킷 Send 판정
 	bool forceSendPacket = false;
-	if (lastInput != moveInput)
+	if (lastInput != moveInput || LastInfo->vector_info().z() != ObjectInfo->vector_info().z())
 	{
 		forceSendPacket = true;
 		lastInput = moveInput;

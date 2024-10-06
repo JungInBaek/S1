@@ -72,7 +72,7 @@ AS1Player::AS1Player()
 		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
 	}
 
-
+	LastInfo = new Protocol::PosInfo();
 	ObjectInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
 
@@ -117,6 +117,8 @@ void AS1Player::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	{
+		LastInfo->CopyFrom(*ObjectInfo);
+
 		FVector Location = GetActorLocation();
 		Protocol::VectorInfo* vectorInfo = ObjectInfo->mutable_vector_info();
 		vectorInfo->set_x(Location.X);
@@ -215,18 +217,18 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 
 	//if (state == Protocol::MOVE_STATE_RUN)
 	{
-		Protocol::VectorInfo* vectorInfo = DestInfo->mutable_vector_info();
+		Protocol::VectorInfo vectorInfo = DestInfo->vector_info();
 		FVector location = GetActorLocation();
-		FVector destLocation = FVector(vectorInfo->x(), vectorInfo->y(), vectorInfo->z());
+		FVector destLocation = FVector(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
 
 		FVector direction = destLocation - location;
 		const float distanceToDest = direction.Length();
 		direction.Normalize();
-
 		float distance = (direction * 600.f * DeltaTime).Length();
+
 		distance = FMath::Min(distanceToDest, distance);
 		FVector nextLocation = location + direction * distance;
-		nextLocation.Z = vectorInfo->z();
+		nextLocation.Z = vectorInfo.z();
 
 		SetActorLocation(nextLocation);
 	}
