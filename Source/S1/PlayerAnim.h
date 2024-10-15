@@ -6,9 +6,25 @@
 #include "Animation/AnimInstance.h"
 #include "PlayerAnim.generated.h"
 
-/**
- * 
- */
+
+UENUM(BlueprintType)
+enum class EPlayerState : uint8
+{
+	None,
+	Idle,
+	Forward,
+	Backward,
+	Right,
+	Left,
+	RightForward,
+	LeftForward,
+	RightBackward,
+	LeftBackward,
+	Jump,
+	Fire,
+};
+
+
 UCLASS()
 class S1_API UPlayerAnim : public UAnimInstance
 {
@@ -26,4 +42,11 @@ public:
 	// 플레이어 점프 여부
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	bool isInAir = false;
+
+	// 플에이어 좌우 이동 속도
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	float direction = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSM)
+	EPlayerState mState = EPlayerState::Idle;
 };

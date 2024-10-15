@@ -234,8 +234,29 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 	case Protocol::MOVE_STATE_IDLE:
 		PRINT_LOG(TEXT("IDLE"));
 		break;
-	case Protocol::MOVE_STATE_RUN:
-		PRINT_LOG(TEXT("RUN"));
+	case Protocol::MOVE_STATE_FORWARD:
+		PRINT_LOG(TEXT("FORWARD"));
+		break;
+	case Protocol::MOVE_STATE_BACKWARD:
+		PRINT_LOG(TEXT("BACKWARD"));
+		break;
+	case Protocol::MOVE_STATE_RIGHT:
+		PRINT_LOG(TEXT("RIGHT"));
+		break;
+	case Protocol::MOVE_STATE_LEFT:
+		PRINT_LOG(TEXT("LEFT"));
+		break;
+	case Protocol::MOVE_STATE_RIGHT_FORWARD:
+		PRINT_LOG(TEXT("RIGHT_FORWARD"));
+		break;
+	case Protocol::MOVE_STATE_LEFT_FORWARD:
+		PRINT_LOG(TEXT("LEFT_FORWARD"));
+		break;
+	case Protocol::MOVE_STATE_RIGHT_BACKWARD:
+		PRINT_LOG(TEXT("RIGHT_BACKWARD"));
+		break;
+	case Protocol::MOVE_STATE_LEFT_BACKWARD:
+		PRINT_LOG(TEXT("LEFT_BACKWARD"));
 		break;
 	case Protocol::MOVE_STATE_JUMP:
 		PRINT_LOG(TEXT("JUMP"));

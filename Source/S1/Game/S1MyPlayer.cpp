@@ -114,14 +114,45 @@ void AS1MyPlayer::Tick(float DeltaTime)
 		lastInput = moveInput;
 	}
 
-	// state 정보
+	// state
 	if (moveInput == FVector2D::Zero())
 	{
 		mState = Protocol::MOVE_STATE_IDLE;
 	}
-	else if (moveInput != FVector2D::Zero())
+	else
 	{
-		mState = Protocol::MOVE_STATE_RUN;
+		if (moveInput.X > 0.0 && moveInput.Y == 0.0)
+		{
+			mState = Protocol::MOVE_STATE_FORWARD;
+		}
+		else if (moveInput.X < 0.0 && moveInput.Y == 0.0)
+		{
+			mState = Protocol::MOVE_STATE_BACKWARD;
+		}
+		else if (moveInput.X == 0.0 && moveInput.Y > 0.0)
+		{
+			mState = Protocol::MOVE_STATE_RIGHT;
+		}
+		else if (moveInput.X == 0.0 && moveInput.Y < 0.0)
+		{
+			mState = Protocol::MOVE_STATE_LEFT;
+		}
+		else if (moveInput.X > 0.0 && moveInput.Y > 0.0)
+		{
+			mState = Protocol::MOVE_STATE_RIGHT_FORWARD;
+		}
+		else if (moveInput.X > 0.0 && moveInput.Y < 0.0)
+		{
+			mState = Protocol::MOVE_STATE_LEFT_FORWARD;
+		}
+		else if (moveInput.X < 0.0 && moveInput.Y > 0.0)
+		{
+			mState = Protocol::MOVE_STATE_RIGHT_BACKWARD;
+		}
+		else if (moveInput.X < 0.0 && moveInput.Y < 0.0)
+		{
+			mState = Protocol::MOVE_STATE_LEFT_BACKWARD;
+		}
 	}
 	
 	if (GetCharacterMovement()->IsFalling())
@@ -151,8 +182,6 @@ void AS1MyPlayer::Tick(float DeltaTime)
 void AS1MyPlayer::Jump(const FInputActionValue& Value)
 {
 	Super::Jump();
-
-	mState = Protocol::MOVE_STATE_JUMP;
 }
 
 void AS1MyPlayer::StopJumping(const FInputActionValue& Value)
