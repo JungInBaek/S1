@@ -117,12 +117,19 @@ void AS1MyPlayer::Tick(float DeltaTime)
 	// state 정보
 	if (moveInput == FVector2D::Zero())
 	{
-		SetMoveState(Protocol::MOVE_STATE_IDLE);
+		mState = Protocol::MOVE_STATE_IDLE;
 	}
 	else if (moveInput != FVector2D::Zero())
 	{
-		SetMoveState(Protocol::MOVE_STATE_RUN);
+		mState = Protocol::MOVE_STATE_RUN;
 	}
+	
+	if (GetCharacterMovement()->IsFalling())
+	{
+		mState = Protocol::MOVE_STATE_JUMP;
+	}
+
+	SetMoveState(mState);
 
 	MovePacketSendTimer -= DeltaTime;
 
@@ -144,7 +151,8 @@ void AS1MyPlayer::Tick(float DeltaTime)
 void AS1MyPlayer::Jump(const FInputActionValue& Value)
 {
 	Super::Jump();
-	jumpInput = Value.Get<float>();
+
+	mState = Protocol::MOVE_STATE_JUMP;
 }
 
 void AS1MyPlayer::StopJumping(const FInputActionValue& Value)
@@ -177,14 +185,6 @@ void AS1MyPlayer::Turn(const FInputActionValue& Value)
 	AddControllerYawInput(value);
 
 	yaw = GetControlRotation().Yaw;
-	/*const uint64 objectId = PlayerInfo->object_id();
-
-	{
-		Protocol::C_TURN turnPkt;
-		turnPkt.set_object_id(objectId);
-		turnPkt.set_yaw(yaw);
-		SEND_PACKET(turnPkt);
-	}*/
 }
 
 void AS1MyPlayer::Fire(const FInputActionValue& Value)

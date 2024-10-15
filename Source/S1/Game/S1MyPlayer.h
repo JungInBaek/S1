@@ -99,11 +99,13 @@ protected:
 	FVector2D moveInput;
 	FVector direction;
 	float yaw;
-	float jumpInput;
 
 	// dirty flag
 	FVector2D lastInput;
 	float lastYaw;
+
+	// state
+	Protocol::MoveState mState;
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = SniperUI)

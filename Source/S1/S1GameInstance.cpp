@@ -168,8 +168,10 @@ void US1GameInstance::HandleSpawn(const Protocol::S_SPAWN& SpawnPkt)
 		Protocol::ObjectType objectType = object.object_type();
 		switch (objectType)
 		{
+		case Protocol::OBJECT_TYPE_NONE:
+			break;
 		case Protocol::OBJECT_TYPE_CREATURE:
-			Protocol::CreatureType creatureType = object.creature_type();
+			Protocol::CreatureType creatureType = object.creature_info().creature_type();
 			switch (creatureType)
 			{
 			case Protocol::CREATURE_TYPE_PLAYER:
@@ -181,6 +183,7 @@ void US1GameInstance::HandleSpawn(const Protocol::S_SPAWN& SpawnPkt)
 				break;
 			case Protocol::CREATURE_TYPE_ENERMY:
 				HandleSpawnEnermy(object);
+				break;
 			}
 			break;
 		}

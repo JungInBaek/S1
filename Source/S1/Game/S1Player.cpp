@@ -207,14 +207,9 @@ void AS1Player::SniperFire(const Protocol::S_SNIPER_FIRE& FirePkt)
 
 void AS1Player::PlayerMoveTick(float DeltaTime)
 {
-	/*direction = FTransform(GetActorRotation()).TransformVector(direction);
-	AddMovementInput(direction);
-	direction = FVector::ZeroVector;*/
-
-	//const Protocol::MoveState state = ObjectInfo->state();
-
 	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
 
+	const Protocol::MoveState state = ObjectInfo->state();
 	//if (state == Protocol::MOVE_STATE_RUN)
 	{
 		Protocol::VectorInfo vectorInfo = DestInfo->vector_info();
@@ -231,6 +226,20 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 		nextLocation.Z = vectorInfo.z();
 
 		SetActorLocation(nextLocation);
+	}
+
+
+	switch (state)
+	{
+	case Protocol::MOVE_STATE_IDLE:
+		PRINT_LOG(TEXT("IDLE"));
+		break;
+	case Protocol::MOVE_STATE_RUN:
+		PRINT_LOG(TEXT("RUN"));
+		break;
+	case Protocol::MOVE_STATE_JUMP:
+		PRINT_LOG(TEXT("JUMP"));
+		break;
 	}
 }
 

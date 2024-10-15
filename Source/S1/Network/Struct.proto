@@ -19,11 +19,27 @@ message PosInfo
 	MoveState state = 4;
 }
 
+message CreatureInfo
+{
+	CreatureType creature_type = 1;
+}
+
+message PlayerInfo
+{
+	PlayerType player_type = 1;
+}
+
+message EnermyInfo
+{
+	EnermyType enermy_type = 1;
+}
+
 message ObjectInfo
 {
 	uint64 object_id = 1;
 	PosInfo pos_info = 2;
 	ObjectType object_type = 3;
-	CreatureType creature_type = 4;
-	PlayerType player_type = 5;
+	CreatureInfo creature_info = 4;
+	PlayerInfo player_info = 5;
+	EnermyInfo enermy_info = 6;
 }
