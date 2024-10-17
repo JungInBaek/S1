@@ -40,7 +40,6 @@ message S_LEAVE_GAME
 message S_SPAWN
 {
 	repeated ObjectInfo objects = 1;
-	repeated CreatureInfo creatures = 2;
 }
 
 message S_DESPAWN
@@ -78,6 +77,20 @@ message C_MOVE
 message S_MOVE
 {
 	PosInfo info = 1;
+}
+
+message C_STATE
+{
+	uint64 object_id = 1;
+	PlayerState player_state = 2;
+	EnermyState enermy_state = 3;
+}
+
+message S_STATE
+{
+	uint64 object_id = 1;
+	PlayerState player_state = 2;
+	EnermyState enermy_state = 3;
 }
 
 message C_CHAT

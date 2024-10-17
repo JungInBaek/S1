@@ -37,17 +37,20 @@ public:
 	void ChangeItem(uint8 key);
 
 public:
-	void SetObjectInfo(const Protocol::PosInfo& Info);
-	void SetMoveState(Protocol::MoveState State);
-
+	void SetObjectInfo(const Protocol::ObjectInfo& Info);
+	void SetCurrentInfo(const Protocol::PosInfo& Info);
 	void SetDestInfo(const Protocol::PosInfo& Info);
+	void SetState(Protocol::PlayerState State);
 
-	Protocol::PosInfo* GetPlayerInfo() { return ObjectInfo; }
-	Protocol::MoveState GetMoveState() { return ObjectInfo->state(); }
+	Protocol::ObjectInfo* GetObjectInfo() { return ObjectInfo; }
+	Protocol::PosInfo* GetCurrentInfo() { return CurrentInfo; }
+	Protocol::PlayerState GetState() { return ObjectInfo->player_info().player_state(); }
 
 protected:
-	class Protocol::PosInfo* LastInfo;		// 지난 오브젝트 정보
-	class Protocol::PosInfo* ObjectInfo;	// 현재 오브젝트 정보
+	class Protocol::ObjectInfo* ObjectInfo;	// 현재 오브젝트 정보
+
+	class Protocol::PosInfo* CurrentInfo;	// 현재 위치 정보
+	class Protocol::PosInfo* LastInfo;		// 지난 위치 정보
 	class Protocol::PosInfo* DestInfo;		// 목적지
 
 public:

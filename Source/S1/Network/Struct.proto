@@ -16,7 +16,6 @@ message PosInfo
 	uint64 object_id = 1;
 	VectorInfo vector_info = 2;
 	float yaw = 3;
-	MoveState state = 4;
 }
 
 message CreatureInfo
@@ -27,11 +26,13 @@ message CreatureInfo
 message PlayerInfo
 {
 	PlayerType player_type = 1;
+	PlayerState player_state = 2;
 }
 
 message EnermyInfo
 {
 	EnermyType enermy_type = 1;
+	EnermyState enermy_state = 2;
 }
 
 message ObjectInfo

@@ -105,7 +105,7 @@ protected:
 	float lastYaw;
 
 	// state
-	Protocol::MoveState mState;
+	Protocol::PlayerState pState;
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = SniperUI)

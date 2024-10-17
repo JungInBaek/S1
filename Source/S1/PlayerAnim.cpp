@@ -23,6 +23,6 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 		auto movement = player->GetCharacterMovement();
 		isInAir = movement->IsFalling();
 
-		mState = (EPlayerState)player->GetMoveState();
+		mState = (EPlayerState)player->GetState();
 	}
 }

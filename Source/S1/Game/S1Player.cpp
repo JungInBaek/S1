@@ -72,8 +72,9 @@ AS1Player::AS1Player()
 		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
 	}
 
+	ObjectInfo = new Protocol::ObjectInfo();
+	CurrentInfo = new Protocol::PosInfo();
 	LastInfo = new Protocol::PosInfo();
-	ObjectInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
 
 	change2();
@@ -83,9 +84,9 @@ AS1Player::AS1Player()
 
 AS1Player::~AS1Player()
 {
-	delete ObjectInfo;
+	delete CurrentInfo;
 	delete DestInfo;
-	ObjectInfo = nullptr;
+	CurrentInfo = nullptr;
 	DestInfo = nullptr;
 }
 
@@ -101,7 +102,7 @@ void AS1Player::BeginPlay()
 		vectorInfo->set_z(Location.Z);
 		DestInfo->set_yaw(GetControlRotation().Yaw);
 
-		SetMoveState(Protocol::MOVE_STATE_IDLE);
+		SetState(Protocol::PLAYER_STATE_IDLE);
 	}
 }
 
@@ -117,14 +118,14 @@ void AS1Player::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	{
-		LastInfo->CopyFrom(*ObjectInfo);
+		LastInfo->CopyFrom(*CurrentInfo);
 
 		FVector Location = GetActorLocation();
-		Protocol::VectorInfo* vectorInfo = ObjectInfo->mutable_vector_info();
+		Protocol::VectorInfo* vectorInfo = CurrentInfo->mutable_vector_info();
 		vectorInfo->set_x(Location.X);
 		vectorInfo->set_y(Location.Y);
 		vectorInfo->set_z(Location.Z);
-		ObjectInfo->set_yaw(GetControlRotation().Yaw);
+		CurrentInfo->set_yaw(GetControlRotation().Yaw);
 	}
 
 	if (IsMyPlayer())
@@ -209,7 +210,7 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 {
 	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
 
-	const Protocol::MoveState state = ObjectInfo->state();
+	const Protocol::PlayerState state = GetState();
 	//if (state == Protocol::MOVE_STATE_RUN)
 	{
 		Protocol::VectorInfo vectorInfo = DestInfo->vector_info();
@@ -231,34 +232,34 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 
 	switch (state)
 	{
-	case Protocol::MOVE_STATE_IDLE:
+	case Protocol::PLAYER_STATE_IDLE:
 		PRINT_LOG(TEXT("IDLE"));
 		break;
-	case Protocol::MOVE_STATE_FORWARD:
+	case Protocol::PLAYER_STATE_FORWARD:
 		PRINT_LOG(TEXT("FORWARD"));
 		break;
-	case Protocol::MOVE_STATE_BACKWARD:
+	case Protocol::PLAYER_STATE_BACKWARD:
 		PRINT_LOG(TEXT("BACKWARD"));
 		break;
-	case Protocol::MOVE_STATE_RIGHT:
+	case Protocol::PLAYER_STATE_RIGHT:
 		PRINT_LOG(TEXT("RIGHT"));
 		break;
-	case Protocol::MOVE_STATE_LEFT:
+	case Protocol::PLAYER_STATE_LEFT:
 		PRINT_LOG(TEXT("LEFT"));
 		break;
-	case Protocol::MOVE_STATE_RIGHT_FORWARD:
+	case Protocol::PLAYER_STATE_RIGHT_FORWARD:
 		PRINT_LOG(TEXT("RIGHT_FORWARD"));
 		break;
-	case Protocol::MOVE_STATE_LEFT_FORWARD:
+	case Protocol::PLAYER_STATE_LEFT_FORWARD:
 		PRINT_LOG(TEXT("LEFT_FORWARD"));
 		break;
-	case Protocol::MOVE_STATE_RIGHT_BACKWARD:
+	case Protocol::PLAYER_STATE_RIGHT_BACKWARD:
 		PRINT_LOG(TEXT("RIGHT_BACKWARD"));
 		break;
-	case Protocol::MOVE_STATE_LEFT_BACKWARD:
+	case Protocol::PLAYER_STATE_LEFT_BACKWARD:
 		PRINT_LOG(TEXT("LEFT_BACKWARD"));
 		break;
-	case Protocol::MOVE_STATE_JUMP:
+	case Protocol::PLAYER_STATE_JUMP:
 		PRINT_LOG(TEXT("JUMP"));
 		break;
 	}
@@ -288,19 +289,21 @@ void AS1Player::change2()
 	gunMeshComp->SetVisibility(false);
 }
 
-void AS1Player::SetMoveState(Protocol::MoveState State)
+void AS1Player::SetState(Protocol::PlayerState State)
 {
-	if (ObjectInfo->state() == State)
+	if (ObjectInfo->player_info().player_state() == State)
 	{
 		return;
 	}
 
-	ObjectInfo->set_state(State);
+	Protocol::PlayerInfo playerInfo = ObjectInfo->player_info();
+	playerInfo.set_player_state(State);
+	ObjectInfo->mutable_player_info()->CopyFrom(playerInfo);
 
 	// TODO
 }
 
-void AS1Player::SetObjectInfo(const Protocol::PosInfo& Info)
+void AS1Player::SetObjectInfo(const Protocol::ObjectInfo& Info)
 {
 	if (ObjectInfo->object_id() != 0)
 	{
@@ -308,19 +311,24 @@ void AS1Player::SetObjectInfo(const Protocol::PosInfo& Info)
 	}
 
 	ObjectInfo->CopyFrom(Info);
+}
 
-	Protocol::VectorInfo vectorInfo = Info.vector_info();
-	FVector Location(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
-	SetActorLocation(Location);
+void AS1Player::SetCurrentInfo(const Protocol::PosInfo& Info)
+{
+	if (CurrentInfo->object_id() != 0)
+	{
+		assert(CurrentInfo->object_id() == Info.object_id());
+	}
+
+	CurrentInfo->CopyFrom(Info);
 }
 
 void AS1Player::SetDestInfo(const Protocol::PosInfo& Info)
 {
-	if (ObjectInfo->object_id() != 0)
+	if (CurrentInfo->object_id() != 0)
 	{
-		assert(ObjectInfo->object_id() == Info.object_id());
+		assert(CurrentInfo->object_id() == Info.object_id());
 	}
 
 	DestInfo->CopyFrom(Info);
-	SetMoveState(Info.state());
 }

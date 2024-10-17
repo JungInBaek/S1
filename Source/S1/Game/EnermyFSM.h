@@ -62,7 +62,7 @@ public:
 	class AEnermy* me;
 
 	UPROPERTY(EditAnywhere, Category = FSM)
-	float attackRange = 100.0f;
+	float attackRange = 120.0f;
 
 	UPROPERTY(EditAnywhere, Category = FSM)
 	float attackDelayTime = 2.0f;

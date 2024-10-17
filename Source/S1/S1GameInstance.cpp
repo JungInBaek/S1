@@ -113,7 +113,13 @@ void US1GameInstance::HandleSpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, 
 			return;
 		}
 
-		Player->SetObjectInfo(PosInfo);
+		Player->SetObjectInfo(ObjectInfo);
+		Player->SetCurrentInfo(PosInfo);
+
+		Protocol::VectorInfo vectorInfo = PosInfo.vector_info();
+		FVector Location(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
+		Player->SetActorLocation(Location);
+
 		MyPlayer = Player;
 		Players.Add(ObjectInfo.object_id(), Player);
 	}
@@ -121,7 +127,12 @@ void US1GameInstance::HandleSpawnPlayer(const Protocol::ObjectInfo& ObjectInfo, 
 	{
 		if (AS1Player* Player = Cast<AS1Player>(World->SpawnActor(OtherPlayerClass, &SpawnLocation)))
 		{
-			Player->SetObjectInfo(PosInfo);
+			Player->SetCurrentInfo(PosInfo);
+
+			Protocol::VectorInfo vectorInfo = PosInfo.vector_info();
+			FVector Location(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
+			Player->SetActorLocation(Location);
+
 			Players.Add(ObjectInfo.object_id(), Player);
 		}
 	}
@@ -156,8 +167,13 @@ void US1GameInstance::HandleSpawnEnermy(const Protocol::ObjectInfo& ObjectInfo)
 	FVector SpawnLocation(PosInfo.vector_info().x(), PosInfo.vector_info().y(), PosInfo.vector_info().z());
 	if (AEnermy* Enermy = Cast<AEnermy>(World->SpawnActor(EnermyClass, &SpawnLocation)))
 	{
-		Enermy->SetObjectInfo(PosInfo);
-		Enermys.Add(ObjectInfo.object_id(), Enermy);
+		Enermy->SetCurrentInfo(PosInfo);
+
+		Protocol::VectorInfo vectorInfo = PosInfo.vector_info();
+		FVector Location(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
+		Enermy->SetActorLocation(Location);
+
+		Enermies.Add(ObjectInfo.object_id(), Enermy);
 	}
 }
 
@@ -214,11 +230,57 @@ void US1GameInstance::HandleDespawn(uint64 ObjectId)
 	//Players.Remove(ObjectId);
 }
 
+void US1GameInstance::HandlePlayerState(const Protocol::S_STATE& StatePkt)
+{
+	AS1Player** Player = Players.Find(StatePkt.object_id());
+	if (Player == nullptr)
+	{
+		return;
+	}
+
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	(*Player)->SetState(StatePkt.player_state());
+}
+
+void US1GameInstance::HandleEnermyState(const Protocol::S_STATE& StatePkt)
+{
+	AEnermy** Enermy = Enermies.Find(StatePkt.object_id());
+	if (Enermy == nullptr)
+	{
+		return;
+	}
+
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	(*Enermy)->SetState(StatePkt.enermy_state());
+}
+
 void US1GameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt)
 {
 	for (const uint64& ObjectId : DespawnPkt.object_ids())
 	{
 		HandleDespawn(ObjectId);
+	}
+}
+
+void US1GameInstance::HandleState(const Protocol::S_STATE& StatePkt)
+{
+	const uint64& ObjectId = StatePkt.object_id();
+
+	if (StatePkt.player_state() != Protocol::PLAYER_STATE_NONE)
+	{
+		HandlePlayerState(StatePkt);
+	}
+	else if (StatePkt.enermy_state() != Protocol::ENERMY_STATE_NONE)
+	{
+		HandleEnermyState(StatePkt);
 	}
 }
 

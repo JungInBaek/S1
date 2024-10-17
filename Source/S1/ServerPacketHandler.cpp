@@ -98,6 +98,15 @@ bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
     return true;
 }
 
+bool Handle_S_STATE(PacketSessionRef& session, Protocol::S_STATE& pkt)
+{
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleState(pkt);
+    }
+    return false;
+}
+
 bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)
 {
     auto Msg = pkt.msg();

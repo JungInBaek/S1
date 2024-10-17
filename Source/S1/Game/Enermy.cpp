@@ -18,7 +18,9 @@ AEnermy::AEnermy()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
 
-	ObjectInfo = new Protocol::PosInfo();
+	ObjectInfo = new Protocol::ObjectInfo();
+	CurrentInfo = new Protocol::PosInfo();
+	LastInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
 
 	fsm = CreateDefaultSubobject<UEnermyFSM>(TEXT("FSM"));
@@ -45,7 +47,7 @@ void AEnermy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnermy::SetObjectInfo(const Protocol::PosInfo& Info)
+void AEnermy::SetObjectInfo(const Protocol::ObjectInfo& Info)
 {
 	if (ObjectInfo->object_id() != 0)
 	{
@@ -53,9 +55,27 @@ void AEnermy::SetObjectInfo(const Protocol::PosInfo& Info)
 	}
 
 	ObjectInfo->CopyFrom(Info);
+}
 
-	Protocol::VectorInfo vectorInfo = Info.vector_info();
-	FVector Location(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
-	SetActorLocation(Location);
+void AEnermy::SetCurrentInfo(const Protocol::PosInfo& Info)
+{
+	if (CurrentInfo->object_id() != 0)
+	{
+		assert(CurrentInfo->object_id() == Info.object_id());
+	}
+
+	CurrentInfo->CopyFrom(Info);
+}
+
+void AEnermy::SetState(Protocol::EnermyState State)
+{
+	if (ObjectInfo->enermy_info().enermy_state() == State)
+	{
+		return;
+	}
+
+	Protocol::EnermyInfo enermyInfo = ObjectInfo->enermy_info();
+	enermyInfo.set_enermy_state(State);
+	ObjectInfo->mutable_enermy_info()->CopyFrom(enermyInfo);
 }
 

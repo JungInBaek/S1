@@ -108,7 +108,7 @@ void AS1MyPlayer::Tick(float DeltaTime)
 
 	// 패킷 Send 판정
 	bool forceSendPacket = false;
-	if (lastInput != moveInput || LastInfo->vector_info().z() != ObjectInfo->vector_info().z())
+	if (lastInput != moveInput || LastInfo->vector_info().z() != CurrentInfo->vector_info().z())
 	{
 		forceSendPacket = true;
 		lastInput = moveInput;
@@ -117,65 +117,73 @@ void AS1MyPlayer::Tick(float DeltaTime)
 	// state
 	if (moveInput == FVector2D::Zero())
 	{
-		mState = Protocol::MOVE_STATE_IDLE;
+		pState = Protocol::PLAYER_STATE_IDLE;
 	}
 	else
 	{
 		if (moveInput.X > 0.0 && moveInput.Y == 0.0)
 		{
-			mState = Protocol::MOVE_STATE_FORWARD;
+			pState = Protocol::PLAYER_STATE_FORWARD;
 		}
 		else if (moveInput.X < 0.0 && moveInput.Y == 0.0)
 		{
-			mState = Protocol::MOVE_STATE_BACKWARD;
+			pState = Protocol::PLAYER_STATE_BACKWARD;
 		}
 		else if (moveInput.X == 0.0 && moveInput.Y > 0.0)
 		{
-			mState = Protocol::MOVE_STATE_RIGHT;
+			pState = Protocol::PLAYER_STATE_RIGHT;
 		}
 		else if (moveInput.X == 0.0 && moveInput.Y < 0.0)
 		{
-			mState = Protocol::MOVE_STATE_LEFT;
+			pState = Protocol::PLAYER_STATE_LEFT;
 		}
 		else if (moveInput.X > 0.0 && moveInput.Y > 0.0)
 		{
-			mState = Protocol::MOVE_STATE_RIGHT_FORWARD;
+			pState = Protocol::PLAYER_STATE_RIGHT_FORWARD;
 		}
 		else if (moveInput.X > 0.0 && moveInput.Y < 0.0)
 		{
-			mState = Protocol::MOVE_STATE_LEFT_FORWARD;
+			pState = Protocol::PLAYER_STATE_LEFT_FORWARD;
 		}
 		else if (moveInput.X < 0.0 && moveInput.Y > 0.0)
 		{
-			mState = Protocol::MOVE_STATE_RIGHT_BACKWARD;
+			pState = Protocol::PLAYER_STATE_RIGHT_BACKWARD;
 		}
 		else if (moveInput.X < 0.0 && moveInput.Y < 0.0)
 		{
-			mState = Protocol::MOVE_STATE_LEFT_BACKWARD;
+			pState = Protocol::PLAYER_STATE_LEFT_BACKWARD;
 		}
 	}
 	
 	if (GetCharacterMovement()->IsFalling())
 	{
-		mState = Protocol::MOVE_STATE_JUMP;
+		pState = Protocol::PLAYER_STATE_JUMP;
 	}
 
-	SetMoveState(mState);
+	SetState(pState);
 
 	MovePacketSendTimer -= DeltaTime;
 
 	if (forceSendPacket || MovePacketSendTimer <= 0)
 	{
 		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
-
-		Protocol::C_MOVE MovePkt;
 		{
-			Protocol::PosInfo* Info = MovePkt.mutable_info();
-			Info->CopyFrom(*ObjectInfo);
-			Info->set_yaw(yaw);
-			Info->set_state(GetMoveState());
+			Protocol::C_MOVE MovePkt;
+			{
+				Protocol::PosInfo* Info = MovePkt.mutable_info();
+				Info->CopyFrom(*CurrentInfo);
+				Info->set_yaw(yaw);
+			}
+			SEND_PACKET(MovePkt);
 		}
-		SEND_PACKET(MovePkt);
+		{
+			Protocol::C_STATE StatePkt;
+			{
+				StatePkt.set_object_id(ObjectInfo->object_id());
+				StatePkt.set_player_state(GetState());
+			}
+			SEND_PACKET(StatePkt);
+		}
 	}
 }
 
@@ -269,7 +277,7 @@ void AS1MyPlayer::Fire(const FInputActionValue& Value)
 		}
 
 		Protocol::C_SNIPER_FIRE firePkt;
-		firePkt.set_object_id(ObjectInfo->object_id());
+		firePkt.set_object_id(CurrentInfo->object_id());
 
 		Protocol::VectorInfo* start = firePkt.mutable_start();
 		start->set_x(startPos.X);
@@ -300,7 +308,7 @@ void AS1MyPlayer::ChangeToGrenadeGun(const FInputActionValue& Value)
 	gunMeshComp->SetVisibility(true);
 
 	Protocol::C_CHANGE_ITEM changePkt;
-	changePkt.set_object_id(ObjectInfo->object_id());
+	changePkt.set_object_id(CurrentInfo->object_id());
 	changePkt.set_key(uint8(1));
 	SEND_PACKET(changePkt);
 }
@@ -312,7 +320,7 @@ void AS1MyPlayer::ChangeToSniperGun(const FInputActionValue& Value)
 	gunMeshComp->SetVisibility(false);
 
 	Protocol::C_CHANGE_ITEM changePkt;
-	changePkt.set_object_id(ObjectInfo->object_id());
+	changePkt.set_object_id(CurrentInfo->object_id());
 	changePkt.set_key(uint8(2));
 	SEND_PACKET(changePkt);
 }

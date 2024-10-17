@@ -34,10 +34,8 @@ public:
 	void HandleSpawnPlayer(const Protocol::S_ENTER_GAME& EnterGamePkt);
 	void HandleSpawnEnermy(const Protocol::ObjectInfo& ObjectInfo);
 	void HandleSpawn(const Protocol::S_SPAWN& SpawnPkt);
-
-	void HandleDespawn(uint64 ObjectId);
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
-
+	void HandleState(const Protocol::S_STATE& StatePkt);
 	void HandleTurn(const Protocol::S_TURN& TurnPkt);
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);
@@ -45,6 +43,10 @@ public:
 	void HandleSniperFire(const Protocol::S_SNIPER_FIRE& FirePkt);
 	void HandleChangeItem(const Protocol::S_CHANGE_ITEM& ChangePkt);
 	
+	void HandleDespawn(uint64 ObjectId);
+	void HandlePlayerState(const Protocol::S_STATE& StatePkt);
+	void HandleEnermyState(const Protocol::S_STATE& StatePkt);
+
 public:
 	// Game Server
 	class FSocket* Socket;
@@ -62,5 +64,5 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AEnermy> EnermyClass;
 
-	TMap<uint64, AEnermy*> Enermys;
+	TMap<uint64, AEnermy*> Enermies;
 };
