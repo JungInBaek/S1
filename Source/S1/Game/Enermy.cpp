@@ -37,7 +37,6 @@ void AEnermy::BeginPlay()
 void AEnermy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
