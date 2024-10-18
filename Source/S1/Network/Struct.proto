@@ -13,7 +13,6 @@ message VectorInfo
 
 message PosInfo
 {
-	uint64 object_id = 1;
 	VectorInfo vector_info = 2;
 	float yaw = 3;
 }

@@ -71,12 +71,14 @@ message S_JUMP
 
 message C_MOVE
 {
-	PosInfo info = 1;
+	uint64 object_id = 1;
+	PosInfo info = 2;
 }
 
 message S_MOVE
 {
-	PosInfo info = 1;
+	uint64 object_id = 1;
+	PosInfo info = 2;
 }
 
 message C_STATE

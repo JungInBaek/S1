@@ -59,11 +59,6 @@ void AEnermy::SetObjectInfo(const Protocol::ObjectInfo& Info)
 
 void AEnermy::SetCurrentInfo(const Protocol::PosInfo& Info)
 {
-	if (CurrentInfo->object_id() != 0)
-	{
-		assert(CurrentInfo->object_id() == Info.object_id());
-	}
-
 	CurrentInfo->CopyFrom(Info);
 }
 

@@ -315,20 +315,10 @@ void AS1Player::SetObjectInfo(const Protocol::ObjectInfo& Info)
 
 void AS1Player::SetCurrentInfo(const Protocol::PosInfo& Info)
 {
-	if (CurrentInfo->object_id() != 0)
-	{
-		assert(CurrentInfo->object_id() == Info.object_id());
-	}
-
 	CurrentInfo->CopyFrom(Info);
 }
 
 void AS1Player::SetDestInfo(const Protocol::PosInfo& Info)
 {
-	if (CurrentInfo->object_id() != 0)
-	{
-		assert(CurrentInfo->object_id() == Info.object_id());
-	}
-
 	DestInfo->CopyFrom(Info);
 }

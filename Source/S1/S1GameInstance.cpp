@@ -327,7 +327,7 @@ void US1GameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 		return;
 	}
 
-	const uint64 ObjectId = MovePkt.info().object_id();
+	const uint64 ObjectId = MovePkt.object_id();
 	AS1Player** FindPlayer = Players.Find(ObjectId);
 	if (FindPlayer == nullptr)
 	{
