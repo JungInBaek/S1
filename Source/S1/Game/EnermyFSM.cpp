@@ -35,7 +35,7 @@ void UEnermyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//if (target == nullptr)
-	{
+	/*{
 		float min = FLT_MAX;
 		TArray<AActor*, FDefaultAllocator> actors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AS1Player::StaticClass(), actors);
@@ -49,13 +49,13 @@ void UEnermyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 				target = player;
 			}
 		}
-	}
+	}*/
 
 	// 실행창에 상태 메시지 출력
-	FString logMsg = UEnum::GetValueAsString(mState);
+	FString logMsg = UEnum::GetValueAsString(State);
 	GEngine->AddOnScreenDebugMessage(0, 1, FColor::Cyan, logMsg);
 
-	switch (mState)
+	switch (State)
 	{
 	case EEnermyState::Idle:
 		IdleState();
@@ -77,29 +77,31 @@ void UEnermyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 
 void UEnermyFSM::IdleState()
 {
-	currentTime += GetWorld()->DeltaTimeSeconds;
+	/*currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime >= idleDelayTime)
 	{
 		mState = EEnermyState::Move;
 		currentTime = 0;
-	}
+	}*/
 }
 
 void UEnermyFSM::MoveState()
 {
-	FVector destLocation = target->GetActorLocation();
+	FVector destLocation(me->DestInfo->vector_info().x(), me->DestInfo->vector_info().y(), me->DestInfo->vector_info().z());
+	me->SetActorLocation(destLocation);
+	/*FVector destLocation = target->GetActorLocation();
 	FVector dir = destLocation - me->GetActorLocation();
 	me->AddMovementInput(dir.GetSafeNormal());
 
 	if (dir.Size() <= attackRange)
 	{
 		mState = EEnermyState::Attack;
-	}
+	}*/
 }
 
 void UEnermyFSM::AttackState()
 {
-	currentTime += GetWorld()->DeltaTimeSeconds;
+	/*currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime >= attackDelayTime)
 	{
 		PRINT_LOG(TEXT("Attack!"));
@@ -110,22 +112,22 @@ void UEnermyFSM::AttackState()
 	if (distance > attackRange)
 	{
 		mState = EEnermyState::Move;
-	}
+	}*/
 }
 
 void UEnermyFSM::DamageState()
 {
-	currentTime += GetWorld()->DeltaTimeSeconds;
+	/*currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > damageDelayTime)
 	{
 		mState = EEnermyState::Idle;
 		currentTime = 0;
-	}
+	}*/
 }
 
 void UEnermyFSM::DieState()
 {
-	FVector P0 = me->GetActorLocation();
+	/*FVector P0 = me->GetActorLocation();
 	FVector vt = FVector::DownVector * dieSpeed * GetWorld()->DeltaTimeSeconds;
 	FVector P = P0 + vt;
 	me->SetActorLocation(P);
@@ -133,12 +135,12 @@ void UEnermyFSM::DieState()
 	if (P.Z < -200.0f)
 	{
 		me->Destroy();
-	}
+	}*/
 }
 
 void UEnermyFSM::OnDamageProcess()
 {
-	hp -= 50;
+	/*hp -= 50;
 
 	if (hp > 0)
 	{
@@ -148,5 +150,5 @@ void UEnermyFSM::OnDamageProcess()
 	{
 		mState = EEnermyState::Die;
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	}*/
 }

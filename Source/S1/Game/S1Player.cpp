@@ -84,9 +84,13 @@ AS1Player::AS1Player()
 
 AS1Player::~AS1Player()
 {
+	delete ObjectInfo;
 	delete CurrentInfo;
+	delete LastInfo;
 	delete DestInfo;
+	ObjectInfo = nullptr;
 	CurrentInfo = nullptr;
+	LastInfo = nullptr;
 	DestInfo = nullptr;
 }
 
@@ -121,10 +125,11 @@ void AS1Player::Tick(float DeltaTime)
 		LastInfo->CopyFrom(*CurrentInfo);
 
 		FVector Location = GetActorLocation();
-		Protocol::VectorInfo* vectorInfo = CurrentInfo->mutable_vector_info();
-		vectorInfo->set_x(Location.X);
-		vectorInfo->set_y(Location.Y);
-		vectorInfo->set_z(Location.Z);
+		Protocol::VectorInfo vectorInfo = CurrentInfo->vector_info();
+		vectorInfo.set_x(Location.X);
+		vectorInfo.set_y(Location.Y);
+		vectorInfo.set_z(Location.Z);
+		CurrentInfo->mutable_vector_info()->CopyFrom(vectorInfo);
 		CurrentInfo->set_yaw(GetControlRotation().Yaw);
 	}
 
@@ -134,6 +139,64 @@ void AS1Player::Tick(float DeltaTime)
 	}
 
 	PlayerMoveTick(DeltaTime);
+}
+
+void AS1Player::PlayerMoveTick(float DeltaTime)
+{
+	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
+
+	const Protocol::PlayerState state = GetState();
+	//if (state == Protocol::MOVE_STATE_RUN)
+	{
+		Protocol::VectorInfo vectorInfo = DestInfo->vector_info();
+		FVector location = GetActorLocation();
+		FVector destLocation = FVector(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
+
+		FVector direction = destLocation - location;
+		const float distanceToDest = direction.Length();
+		direction.Normalize();
+		float distance = (direction * 500.f * DeltaTime).Length();
+
+		distance = FMath::Min(distanceToDest, distance);
+		FVector nextLocation = location + direction * distance;
+		nextLocation.Z = vectorInfo.z();
+
+		SetActorLocation(nextLocation);
+	}
+
+	switch (state)
+	{
+	case Protocol::PLAYER_STATE_IDLE:
+		PRINT_LOG(TEXT("IDLE"));
+		break;
+	case Protocol::PLAYER_STATE_FORWARD:
+		PRINT_LOG(TEXT("FORWARD"));
+		break;
+	case Protocol::PLAYER_STATE_BACKWARD:
+		PRINT_LOG(TEXT("BACKWARD"));
+		break;
+	case Protocol::PLAYER_STATE_RIGHT:
+		PRINT_LOG(TEXT("RIGHT"));
+		break;
+	case Protocol::PLAYER_STATE_LEFT:
+		PRINT_LOG(TEXT("LEFT"));
+		break;
+	case Protocol::PLAYER_STATE_RIGHT_FORWARD:
+		PRINT_LOG(TEXT("RIGHT_FORWARD"));
+		break;
+	case Protocol::PLAYER_STATE_LEFT_FORWARD:
+		PRINT_LOG(TEXT("LEFT_FORWARD"));
+		break;
+	case Protocol::PLAYER_STATE_RIGHT_BACKWARD:
+		PRINT_LOG(TEXT("RIGHT_BACKWARD"));
+		break;
+	case Protocol::PLAYER_STATE_LEFT_BACKWARD:
+		PRINT_LOG(TEXT("LEFT_BACKWARD"));
+		break;
+	case Protocol::PLAYER_STATE_JUMP:
+		PRINT_LOG(TEXT("JUMP"));
+		break;
+	}
 }
 
 bool AS1Player::IsMyPlayer()
@@ -203,65 +266,6 @@ void AS1Player::SniperFire(const Protocol::S_SNIPER_FIRE& FirePkt)
 				enermyFSM->OnDamageProcess();
 			}
 		}
-	}
-}
-
-void AS1Player::PlayerMoveTick(float DeltaTime)
-{
-	SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-
-	const Protocol::PlayerState state = GetState();
-	//if (state == Protocol::MOVE_STATE_RUN)
-	{
-		Protocol::VectorInfo vectorInfo = DestInfo->vector_info();
-		FVector location = GetActorLocation();
-		FVector destLocation = FVector(vectorInfo.x(), vectorInfo.y(), vectorInfo.z());
-
-		FVector direction = destLocation - location;
-		const float distanceToDest = direction.Length();
-		direction.Normalize();
-		float distance = (direction * 600.f * DeltaTime).Length();
-
-		distance = FMath::Min(distanceToDest, distance);
-		FVector nextLocation = location + direction * distance;
-		nextLocation.Z = vectorInfo.z();
-
-		SetActorLocation(nextLocation);
-	}
-
-
-	switch (state)
-	{
-	case Protocol::PLAYER_STATE_IDLE:
-		PRINT_LOG(TEXT("IDLE"));
-		break;
-	case Protocol::PLAYER_STATE_FORWARD:
-		PRINT_LOG(TEXT("FORWARD"));
-		break;
-	case Protocol::PLAYER_STATE_BACKWARD:
-		PRINT_LOG(TEXT("BACKWARD"));
-		break;
-	case Protocol::PLAYER_STATE_RIGHT:
-		PRINT_LOG(TEXT("RIGHT"));
-		break;
-	case Protocol::PLAYER_STATE_LEFT:
-		PRINT_LOG(TEXT("LEFT"));
-		break;
-	case Protocol::PLAYER_STATE_RIGHT_FORWARD:
-		PRINT_LOG(TEXT("RIGHT_FORWARD"));
-		break;
-	case Protocol::PLAYER_STATE_LEFT_FORWARD:
-		PRINT_LOG(TEXT("LEFT_FORWARD"));
-		break;
-	case Protocol::PLAYER_STATE_RIGHT_BACKWARD:
-		PRINT_LOG(TEXT("RIGHT_BACKWARD"));
-		break;
-	case Protocol::PLAYER_STATE_LEFT_BACKWARD:
-		PRINT_LOG(TEXT("LEFT_BACKWARD"));
-		break;
-	case Protocol::PLAYER_STATE_JUMP:
-		PRINT_LOG(TEXT("JUMP"));
-		break;
 	}
 }
 

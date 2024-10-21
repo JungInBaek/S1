@@ -11,6 +11,7 @@
 #include "ServerPacketHandler.h"
 #include "S1MyPlayer.h"
 #include "Enermy.h"
+#include "EnermyFSM.h"
 #include "S1.h"
 
 
@@ -272,8 +273,6 @@ void US1GameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt)
 
 void US1GameInstance::HandleState(const Protocol::S_STATE& StatePkt)
 {
-	const uint64& ObjectId = StatePkt.object_id();
-
 	if (StatePkt.player_state() != Protocol::PLAYER_STATE_NONE)
 	{
 		HandlePlayerState(StatePkt);
@@ -281,6 +280,25 @@ void US1GameInstance::HandleState(const Protocol::S_STATE& StatePkt)
 	else if (StatePkt.enermy_state() != Protocol::ENERMY_STATE_NONE)
 	{
 		HandleEnermyState(StatePkt);
+	}
+}
+
+void US1GameInstance::HandleEnermyInfo(const Protocol::S_ENERMY_INFO& EnermyPkt)
+{
+	const uint64& ObjectId = EnermyPkt.objectinfo().object_id();
+	const uint64& TargetId = EnermyPkt.target_id();
+
+	if (AEnermy** Enermy = Enermies.Find(ObjectId))
+	{
+		(*Enermy)->ObjectInfo->mutable_enermy_info()->CopyFrom(EnermyPkt.objectinfo().enermy_info());
+		(*Enermy)->SetDestInfo(EnermyPkt.objectinfo().pos_info());
+		(*Enermy)->enermyFsm->hp = EnermyPkt.objectinfo().creature_info().hp();
+		(*Enermy)->enermyFsm->State = static_cast<EEnermyState>(EnermyPkt.objectinfo().enermy_info().enermy_state());
+
+		if (AS1Player** Target = Players.Find(TargetId))
+		{
+			(*Enermy)->enermyFsm->target = *Target;
+		}
 	}
 }
 

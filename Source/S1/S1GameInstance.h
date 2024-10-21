@@ -36,6 +36,7 @@ public:
 	void HandleSpawn(const Protocol::S_SPAWN& SpawnPkt);
 	void HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt);
 	void HandleState(const Protocol::S_STATE& StatePkt);
+	void HandleEnermyInfo(const Protocol::S_ENERMY_INFO& EnermyPkt);
 	void HandleTurn(const Protocol::S_TURN& TurnPkt);
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 	void HandleJump(const Protocol::S_JUMP& JumpPkt);

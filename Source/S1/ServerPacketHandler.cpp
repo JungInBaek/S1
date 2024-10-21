@@ -104,7 +104,16 @@ bool Handle_S_STATE(PacketSessionRef& session, Protocol::S_STATE& pkt)
     {
         GameInstance->HandleState(pkt);
     }
-    return false;
+    return true;
+}
+
+bool Handle_S_ENERMY_INFO(PacketSessionRef& session, Protocol::S_ENERMY_INFO& pkt)
+{
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleEnermyInfo(pkt);
+    }
+    return true;
 }
 
 bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)

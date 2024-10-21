@@ -16,6 +16,7 @@ class S1_API AEnermy : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AEnermy();
+	virtual ~AEnermy();
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,6 +33,7 @@ public:
 public:
 	void SetObjectInfo(const Protocol::ObjectInfo& Info);
 	void SetCurrentInfo(const Protocol::PosInfo& Info);
+	void SetDestInfo(const Protocol::PosInfo& Info);
 	void SetState(Protocol::EnermyState State);
 
 	Protocol::ObjectInfo* GetObjectInfo() { return ObjectInfo; }
@@ -42,10 +44,9 @@ public:
 	class Protocol::ObjectInfo* ObjectInfo;	// 현재 오브젝트 정보
 
 	class Protocol::PosInfo* CurrentInfo;	// 현재 위치 정보
-	class Protocol::PosInfo* LastInfo;		// 지난 위치 정보
-	class Protocol::PosInfo* DestInfo;		// 목적지
+	class Protocol::PosInfo* DestInfo;		// 목적지 정보
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
-	class UEnermyFSM* fsm;
+	class UEnermyFSM* enermyFsm;
 };

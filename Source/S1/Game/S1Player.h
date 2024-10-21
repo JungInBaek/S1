@@ -27,12 +27,13 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	void PlayerMoveTick(float DeltaTime);
+
 	bool IsMyPlayer();
 
 	void Turn(float yaw);
 	void Fire();
 	void SniperFire(const Protocol::S_SNIPER_FIRE& FirePkt);
-	void PlayerMoveTick(float DeltaTime);
 	void Jump();
 	void ChangeItem(uint8 key);
 
@@ -47,11 +48,11 @@ public:
 	Protocol::PlayerState GetState() { return ObjectInfo->player_info().player_state(); }
 
 protected:
-	class Protocol::ObjectInfo* ObjectInfo;	// 현재 오브젝트 정보
+	class Protocol::ObjectInfo* ObjectInfo;		// 현재 오브젝트 정보
 
-	class Protocol::PosInfo* CurrentInfo;	// 현재 위치 정보
-	class Protocol::PosInfo* LastInfo;		// 지난 위치 정보
-	class Protocol::PosInfo* DestInfo;		// 목적지
+	class Protocol::PosInfo* CurrentInfo;		// 현재 위치 정보
+	class Protocol::PosInfo* LastInfo;			// 지난 위치 정보
+	class Protocol::PosInfo* DestInfo;			// 목적지 위치 정보
 
 public:
 	float rate = 45.0f;

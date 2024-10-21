@@ -17,11 +17,6 @@ message PosInfo
 	float yaw = 3;
 }
 
-message CreatureInfo
-{
-	CreatureType creature_type = 1;
-}
-
 message PlayerInfo
 {
 	PlayerType player_type = 1;
@@ -32,6 +27,12 @@ message EnermyInfo
 {
 	EnermyType enermy_type = 1;
 	EnermyState enermy_state = 2;
+}
+
+message CreatureInfo
+{
+	CreatureType creature_type = 1;
+	int32 hp = 2;
 }
 
 message ObjectInfo

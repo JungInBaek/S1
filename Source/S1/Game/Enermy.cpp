@@ -20,10 +20,19 @@ AEnermy::AEnermy()
 
 	ObjectInfo = new Protocol::ObjectInfo();
 	CurrentInfo = new Protocol::PosInfo();
-	LastInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
 
-	fsm = CreateDefaultSubobject<UEnermyFSM>(TEXT("FSM"));
+	enermyFsm = CreateDefaultSubobject<UEnermyFSM>(TEXT("FSM"));
+}
+
+AEnermy::~AEnermy()
+{
+	delete ObjectInfo;
+	delete CurrentInfo;
+	delete DestInfo;
+	ObjectInfo = nullptr;
+	CurrentInfo = nullptr;
+	DestInfo = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +68,11 @@ void AEnermy::SetObjectInfo(const Protocol::ObjectInfo& Info)
 void AEnermy::SetCurrentInfo(const Protocol::PosInfo& Info)
 {
 	CurrentInfo->CopyFrom(Info);
+}
+
+void AEnermy::SetDestInfo(const Protocol::PosInfo& Info)
+{
+	DestInfo->CopyFrom(Info);
 }
 
 void AEnermy::SetState(Protocol::EnermyState State)

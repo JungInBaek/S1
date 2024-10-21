@@ -95,6 +95,12 @@ message S_STATE
 	EnermyState enermy_state = 3;
 }
 
+message S_ENERMY_INFO
+{
+	ObjectInfo objectInfo = 1;
+	uint64 target_id = 2;
+}
+
 message C_CHAT
 {
 	string msg = 1;
