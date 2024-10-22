@@ -87,7 +87,20 @@ void UEnermyFSM::IdleState()
 
 void UEnermyFSM::MoveState()
 {
-	FVector destLocation(me->DestInfo->vector_info().x(), me->DestInfo->vector_info().y(), me->DestInfo->vector_info().z());
+	me->SetActorRotation(FRotator(0, me->DestInfo->yaw(), 0));
+
+	Protocol::VectorInfo destVector = me->DestInfo->vector_info();
+	FVector location = me->GetActorLocation();
+	FVector destLocation = FVector(destVector.x(), destVector.y(), destVector.z());
+
+	FVector direction = destLocation - location;
+	const float distanceToDest = direction.Length();
+	direction.Normalize();
+	float distance = (direction * 500.f * GetWorld()->DeltaTimeSeconds).Length();
+	distance = FMath::Min(distanceToDest, distance);
+
+	FVector nextLocation = location + direction * distance;
+	nextLocation.Z = destVector.z();
 	me->SetActorLocation(destLocation);
 	/*FVector destLocation = target->GetActorLocation();
 	FVector dir = destLocation - me->GetActorLocation();
