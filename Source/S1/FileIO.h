@@ -25,5 +25,5 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void OutputLevelInfo(const TMap<FVector, TArray<FVector>>& OutputEdgesMap);
+	void OutputLevelInfo(const TMap<FVector, int32>& OutputEdgesMap);
 };

@@ -18,7 +18,7 @@ void APathFinder::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GenerateEdges(GenerateNodes(GetWorld(), _GridSize), _GridSize);
+	GenerateNodes(GetWorld(), _GridSize);
 	UE_LOG(LogTemp, Warning, TEXT("Debug Test"));
 }
 
@@ -28,9 +28,9 @@ void APathFinder::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-TArray<FVector> APathFinder::GenerateNodes(UWorld* World, float GridSize)
+TMap<FVector, int32> APathFinder::GenerateNodes(UWorld* World, float GridSize)
 {
-	TArray<FVector> Nodes;
+	TMap<FVector, int32> Nodes;
 
 	// 레벨의 경계를 기준으로 노드를 생성
 	for (float x = -LevelBoundary; x <= LevelBoundary; x += GridSize)
@@ -38,18 +38,26 @@ TArray<FVector> APathFinder::GenerateNodes(UWorld* World, float GridSize)
 		for (float y = -LevelBoundary; y <= LevelBoundary; y += GridSize)
 		{
 			FVector Location(x, y, 0);
-			if (IsLocationNavigable(World, Location))
+			Nodes.Add(Location, 0);
+			if (abs(Location.X) == LevelBoundary || abs(Location.Y) == LevelBoundary)
 			{
-				Nodes.Add(Location);
+				Nodes[Location] = 0;
+			}
+			else if (IsLocationNavigable(World, Location))
+			{
+				Nodes[Location] = 1;
 			}
 			else
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Obstacle: %f, %f, %f"), Location.X, Location.Y, Location.Z);
+				Nodes[Location] = -1;
 			}
 		}
 	}
 
-	NodeArr = Nodes;
+	NodeMap = Nodes;
+	FileIO->OutputLevelInfo(NodeMap);
+
 	return Nodes;
 }
 
@@ -61,7 +69,7 @@ bool APathFinder::IsLocationNavigable(UWorld* World, FVector Location)
 	FVector End = Location - FVector(0, 0, 0);
 	FCollisionQueryParams Params;
 
-	bool Result = !World->LineTraceSingleByChannel(Hit, Start, End, ECC_GameTraceChannel5, Params);
+	bool Result = !World->LineTraceSingleByChannel(Hit, Start, End, ECC_WorldStatic, Params);
 
 	if (Result)
 	{
@@ -93,8 +101,8 @@ TMap<FVector, TArray<FVector>> APathFinder::GenerateEdges(const TArray<FVector>&
 		Edges.Add(Node, Neighbors);
 	}
 
-	EdgesMap = Edges;
-	FileIO->OutputLevelInfo(EdgesMap);
+	//EdgesMap = Edges;
+	//FileIO->OutputLevelInfo(NodeMap);
 
 	return Edges;
 }

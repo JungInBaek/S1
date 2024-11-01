@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float _GridSize = 0.f;
 
-	TArray<FVector> GenerateNodes(UWorld* World, float GridSize);
+	TMap<FVector, int32> GenerateNodes(UWorld* World, float GridSize);
 	bool IsLocationNavigable(UWorld* World, FVector Location);
 	TMap<FVector, TArray<FVector>> GenerateEdges(const TArray<FVector>& Nodes, float GridSize);
 
@@ -40,8 +40,8 @@ public:
 		FVector(0, 1, 0), FVector(0, -1, 0)
 	};
 
-	TArray<FVector> NodeArr;
-	TMap<FVector, TArray<FVector>> EdgesMap;
+	//TArray<FVector> NodeArr;
+	TMap<FVector, int32> NodeMap;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = LevelFileIO)
 	class UFileIO* FileIO;

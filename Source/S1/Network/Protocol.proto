@@ -147,3 +147,10 @@ message S_CHANGE_ITEM
 	uint64 object_id = 1;
 	uint32 key = 2;
 }
+
+message C_DAMAGE_ENERMY
+{
+	uint64 object_id = 1;
+	uint64 target_id = 2;
+	uint32 damage = 3;
+}

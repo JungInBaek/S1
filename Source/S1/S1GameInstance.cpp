@@ -290,7 +290,7 @@ void US1GameInstance::HandleEnermyInfo(const Protocol::S_ENERMY_INFO& EnermyPkt)
 
 	if (AEnermy** Enermy = Enermies.Find(ObjectId))
 	{
-		(*Enermy)->ObjectInfo->mutable_enermy_info()->CopyFrom(EnermyPkt.objectinfo().enermy_info());
+		(*Enermy)->SetObjectInfo(EnermyPkt.objectinfo());
 		(*Enermy)->SetDestInfo(EnermyPkt.objectinfo().pos_info());
 		(*Enermy)->enermyFsm->hp = EnermyPkt.objectinfo().creature_info().hp();
 		(*Enermy)->enermyFsm->State = static_cast<EEnermyState>(EnermyPkt.objectinfo().enermy_info().enermy_state());

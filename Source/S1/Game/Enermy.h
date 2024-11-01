@@ -41,12 +41,13 @@ public:
 	Protocol::EnermyState GetState() { return ObjectInfo->enermy_info().enermy_state(); }
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
+	class UEnermyFSM* enermyFsm;
+
+public:
 	class Protocol::ObjectInfo* ObjectInfo;	// 현재 오브젝트 정보
 
 	class Protocol::PosInfo* CurrentInfo;	// 현재 위치 정보
 	class Protocol::PosInfo* DestInfo;		// 목적지 정보
 
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
-	class UEnermyFSM* enermyFsm;
 };

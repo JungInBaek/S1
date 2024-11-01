@@ -18,9 +18,6 @@ UFileIO::UFileIO()
 void UFileIO::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 
@@ -28,24 +25,19 @@ void UFileIO::BeginPlay()
 void UFileIO::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
-void UFileIO::OutputLevelInfo(const TMap<FVector, TArray<FVector>>& OutputEdgesMap)
+void UFileIO::OutputLevelInfo(const TMap<FVector, int32>& OutputEdgesMap)
 {
 	FString Info;
 	for (auto Item : OutputEdgesMap)
 	{
 		const FVector& Key = Item.Key;
 		Info += FString::Printf(TEXT("Key: (%.6f, %.6f, %.6f)\n"), Key.X, Key.Y, Key.Z);
-		for (const FVector& Value : Item.Value)
-		{
-			Info += FString::Printf(TEXT("\tValue: (%.6f, %.6f, %.6f)\n"), Value.X, Value.Y, Value.Z);
-		}
+		Info += FString::Printf(TEXT("\tValue: %d\n"), Item.Value);
 	}
 
-	FString path = FPaths::GameDevelopersDir() + TEXT("/info");
+	FString path = FPaths::GameDevelopersDir() + TEXT("/MapInfo.txt");
 	UE_LOG(LogTemp, Warning, TEXT("맵 정보 파일 출력!"));
 	FFileHelper::SaveStringToFile(Info, *path);
 }

@@ -87,29 +87,35 @@ void UEnermyFSM::IdleState()
 
 void UEnermyFSM::MoveState()
 {
-	me->SetActorRotation(FRotator(0, me->DestInfo->yaw(), 0));
-
+	// 목적지 벡터
 	Protocol::VectorInfo destVector = me->DestInfo->vector_info();
 	FVector location = me->GetActorLocation();
 	FVector destLocation = FVector(destVector.x(), destVector.y(), destVector.z());
 
+	// 목적지 방향을 계산
 	FVector direction = destLocation - location;
 	const float distanceToDest = direction.Length();
+	direction.Z = 0; // Z축 회전을 무시
 	direction.Normalize();
+
+	// 방향 벡터로부터 yaw 회전을 생성
+	FRotator currentRotation = me->GetActorRotation();
+	FRotator targetRotation = direction.Rotation();
+	targetRotation.Pitch = currentRotation.Pitch; // Pitch 유지
+	targetRotation.Roll = currentRotation.Roll;   // Roll 유지
+
+	// Actor를 목표 회전으로 부드럽게 회전
+	float rotationSpeed = 5.0f; // 회전 속도 조절
+	FRotator newRotation = FMath::RInterpTo(currentRotation, targetRotation, GetWorld()->DeltaTimeSeconds, rotationSpeed);
+	me->SetActorRotation(targetRotation);
+
+
 	float distance = (direction * 500.f * GetWorld()->DeltaTimeSeconds).Length();
 	distance = FMath::Min(distanceToDest, distance);
 
 	FVector nextLocation = location + direction * distance;
 	nextLocation.Z = destVector.z();
-	me->SetActorLocation(destLocation);
-	/*FVector destLocation = target->GetActorLocation();
-	FVector dir = destLocation - me->GetActorLocation();
-	me->AddMovementInput(dir.GetSafeNormal());
-
-	if (dir.Size() <= attackRange)
-	{
-		mState = EEnermyState::Attack;
-	}*/
+	me->SetActorLocation(nextLocation);
 }
 
 void UEnermyFSM::AttackState()
@@ -140,7 +146,8 @@ void UEnermyFSM::DamageState()
 
 void UEnermyFSM::DieState()
 {
-	/*FVector P0 = me->GetActorLocation();
+	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	FVector P0 = me->GetActorLocation();
 	FVector vt = FVector::DownVector * dieSpeed * GetWorld()->DeltaTimeSeconds;
 	FVector P = P0 + vt;
 	me->SetActorLocation(P);
@@ -148,7 +155,7 @@ void UEnermyFSM::DieState()
 	if (P.Z < -200.0f)
 	{
 		me->Destroy();
-	}*/
+	}
 }
 
 void UEnermyFSM::OnDamageProcess()
@@ -157,11 +164,11 @@ void UEnermyFSM::OnDamageProcess()
 
 	if (hp > 0)
 	{
-		mState = EEnermyState::Damage;
-	}
-	else
-	{
-		mState = EEnermyState::Die;
-		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		State = EEnermyState::Damage;
 	}*/
+	//if (hp <= 0)
+	//{
+	//	//State = EEnermyState::Die;
+	//	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//}
 }
