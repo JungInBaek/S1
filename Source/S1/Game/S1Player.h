@@ -77,4 +77,12 @@ public:
 
 	bool bUsingGrenadeGun = true;
 	bool bSniperAim = false;
+
+	// 걷기 속도
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float walkSpeed = 200;
+
+	// 달리기 속도
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float runSpeed = 500;
 };

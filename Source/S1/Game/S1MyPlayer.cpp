@@ -54,6 +54,9 @@ void AS1MyPlayer::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	// 초기 속도 걷기로 설정
+	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
+
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -100,6 +103,10 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 		// Sniper Aim
 		EnhancedInputComponent->BindAction(ia_Sniper, ETriggerEvent::Started, this, &AS1MyPlayer::SniperAim);
 		EnhancedInputComponent->BindAction(ia_Sniper, ETriggerEvent::Completed, this, &AS1MyPlayer::SniperAim);
+
+		// Run
+		EnhancedInputComponent->BindAction(ia_Run, ETriggerEvent::Started, this, &AS1MyPlayer::Run);
+		EnhancedInputComponent->BindAction(ia_Run, ETriggerEvent::Completed, this, &AS1MyPlayer::Run);
 	}
 }
 
@@ -357,5 +364,18 @@ void AS1MyPlayer::SniperAim(const FInputActionValue& Value)
 		_crosshairUI->AddToViewport();
 		_sniperUI->RemoveFromParent();
 		FollowCamera->SetFieldOfView(90.0f);
+	}
+}
+
+void AS1MyPlayer::Run(const FInputActionValue& Value)
+{
+	auto movement = GetCharacterMovement();
+	if (movement->MaxWalkSpeed > walkSpeed)
+	{
+		movement->MaxWalkSpeed = walkSpeed;
+	}
+	else
+	{
+		movement->MaxWalkSpeed = runSpeed;
 	}
 }

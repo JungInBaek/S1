@@ -39,11 +39,10 @@ public:
 	void LookUp(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
 	void Fire(const FInputActionValue& Value);
-
 	void ChangeToGrenadeGun(const FInputActionValue& Value);
 	void ChangeToSniperGun(const FInputActionValue& Value);
-
 	void SniperAim(const FInputActionValue& Value);
+	void Run(const FInputActionValue& Value);
 
 protected:
 	/** MappingContext */
@@ -77,6 +76,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* ia_Sniper;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* ia_Run;
+
 
 protected:
 	/** Camera boom positioning the camera behind the character */
@@ -91,9 +93,13 @@ protected:
 	const float MOVE_PACKET_SEND_DELAY = 0.1f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
-	// 이동 속도
+	// 걷기 속도
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float walkSpeed = 600;
+	float walkSpeed = 200.f;
+
+	// 달리기 속도
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float runSpeed = 500.f;
 
 	// cache
 	FVector2D moveInput;
