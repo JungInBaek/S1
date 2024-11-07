@@ -15,6 +15,7 @@
 #include "S1.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "EnermyFSM.h"
+#include "PlayerAnim.h"
 
 
 AS1Player::AS1Player()
@@ -47,7 +48,8 @@ AS1Player::AS1Player()
 	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	//GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->bRunPhysicsWithNoController = true;
@@ -155,7 +157,12 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 		FVector direction = destLocation - location;
 		const float distanceToDest = direction.Length();
 		direction.Normalize();
-		float distance = (direction * 500.f * DeltaTime).Length();
+		float speed = walkSpeed;
+		if (state == Protocol::PLAYER_STATE_RUN)
+		{
+			speed = runSpeed;
+		}
+		float distance = (direction * speed * DeltaTime).Length();
 
 		distance = FMath::Min(distanceToDest, distance);
 		FVector nextLocation = location + direction * distance;
@@ -216,6 +223,9 @@ void AS1Player::Turn(float yaw)
 
 void AS1Player::Fire()
 {
+	auto anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+	anim->PlayAttackAnim();
+
 	if (bUsingGrenadeGun)
 	{
 		FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
@@ -225,6 +235,9 @@ void AS1Player::Fire()
 
 void AS1Player::SniperFire(const Protocol::S_SNIPER_FIRE& FirePkt)
 {
+	auto anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+	anim->PlayAttackAnim();
+
 	if (bUsingGrenadeGun == false)
 	{
 		FVector startPos(FirePkt.start().x(), FirePkt.start().y(), FirePkt.start().z());

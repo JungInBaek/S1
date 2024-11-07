@@ -26,3 +26,8 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 		mState = (EPlayerState)player->GetState();
 	}
 }
+
+void UPlayerAnim::PlayAttackAnim()
+{
+	Montage_Play(attackAnimMontage);
+}

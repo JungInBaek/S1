@@ -33,8 +33,14 @@ class S1_API UPlayerAnim : public UAnimInstance
 	// 매 프레임 갱신되는 함수
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+public:
+	// 공격 애니메이션 재생 함수
+	void PlayAttackAnim();
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSM)
+	EPlayerState mState = EPlayerState::Idle;
+
 	// 플레이어 이동 속도
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	float speed;
@@ -47,6 +53,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	float direction = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSM)
-	EPlayerState mState = EPlayerState::Idle;
+	// 재생할 공격 애니메이션 몽타주
+	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
+	class UAnimMontage* attackAnimMontage;
 };

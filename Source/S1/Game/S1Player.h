@@ -80,9 +80,9 @@ public:
 
 	// 걷기 속도
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float walkSpeed = 200;
+	float walkSpeed = 200.f;
 
 	// 달리기 속도
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float runSpeed = 500;
+	float runSpeed = 500.f;
 };

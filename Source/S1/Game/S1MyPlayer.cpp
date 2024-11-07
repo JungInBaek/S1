@@ -11,13 +11,14 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Blueprint/UserWidget.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Bullet.h"
 #include "S1.h"
-#include "Blueprint/UserWidget.h"
-#include "Kismet/GameplayStatics.h"
 #include "Enermy.h"
 #include "EnermyFSM.h"
+#include "PlayerAnim.h"
 
 
 AS1MyPlayer::AS1MyPlayer()
@@ -235,6 +236,10 @@ void AS1MyPlayer::Turn(const FInputActionValue& Value)
 
 void AS1MyPlayer::Fire(const FInputActionValue& Value)
 {
+	// 공격 애니메이션 재생
+	auto anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+	anim->PlayAttackAnim();
+
 	if (bUsingGrenadeGun)
 	{
 		FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));

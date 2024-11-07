@@ -94,12 +94,12 @@ protected:
 	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
 	// 걷기 속도
-	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float walkSpeed = 200.f;
+	/*UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float walkSpeed = 200.f;*/
 
 	// 달리기 속도
-	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float runSpeed = 500.f;
+	/*UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float runSpeed = 500.f;*/
 
 	// cache
 	FVector2D moveInput;
