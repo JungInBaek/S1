@@ -83,6 +83,12 @@ AS1Player::AS1Player()
 	change2();
 	changeItemKey[1] = [this]() { change1(); };
 	changeItemKey[2] = [this]() { change2(); };
+
+	ConstructorHelpers::FObjectFinder<USoundBase> tempSound(TEXT("/Script/Engine.SoundWave'/Game/SniperGun/Rifle.Rifle'"));
+	if (tempSound.Succeeded())
+	{
+		fireSound = tempSound.Object;
+	}
 }
 
 AS1Player::~AS1Player()
@@ -221,6 +227,8 @@ void AS1Player::Turn(float yaw)
 
 void AS1Player::Fire()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), fireSound);
+
 	auto anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 	anim->PlayAttackAnim();
 
@@ -233,6 +241,8 @@ void AS1Player::Fire()
 
 void AS1Player::SniperFire(const Protocol::S_SNIPER_FIRE& FirePkt)
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), fireSound);
+
 	auto anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 	anim->PlayAttackAnim();
 

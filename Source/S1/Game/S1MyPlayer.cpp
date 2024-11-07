@@ -236,6 +236,8 @@ void AS1MyPlayer::Turn(const FInputActionValue& Value)
 
 void AS1MyPlayer::Fire(const FInputActionValue& Value)
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), fireSound);
+
 	// 카메라 셰이크 재생
 	auto controller = GetWorld()->GetFirstPlayerController();
 	controller->PlayerCameraManager->StartCameraShake(cameraShake);

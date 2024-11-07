@@ -85,4 +85,8 @@ public:
 	// 달리기 속도
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
 	float runSpeed = 500.f;
+
+	// 총알 발사 사운드
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+	class USoundBase* fireSound;
 };
