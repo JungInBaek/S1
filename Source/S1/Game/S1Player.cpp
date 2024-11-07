@@ -55,22 +55,23 @@ AS1Player::AS1Player()
 	GetCharacterMovement()->bRunPhysicsWithNoController = true;
 
 	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
-	gunMeshComp->SetupAttachment(GetMesh());
+	gunMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
 	if (TempGunMesh.Succeeded())
 	{
 		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
-		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
+		gunMeshComp->SetRelativeLocation(FVector(-17, 10, -3));
+		gunMeshComp->SetRelativeRotation(FRotator(0, 90, 0));
 	}
 
 	sniperGunComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
-	sniperGunComp->SetupAttachment(GetMesh());
-
+	sniperGunComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperMesh(TEXT("StaticMesh'/Game/SniperGun/sniper1.sniper1'"));
 	if (TempSniperMesh.Succeeded())
 	{
 		sniperGunComp->SetStaticMesh(TempSniperMesh.Object);
-		sniperGunComp->SetRelativeLocation(FVector(-22, 55, 120));
+		sniperGunComp->SetRelativeLocation(FVector(-42, 7, 1));
+		sniperGunComp->SetRelativeRotation(FRotator(0, 90, 0));
 		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
 	}
 
@@ -157,11 +158,8 @@ void AS1Player::PlayerMoveTick(float DeltaTime)
 		FVector direction = destLocation - location;
 		const float distanceToDest = direction.Length();
 		direction.Normalize();
+
 		float speed = walkSpeed;
-		if (state == Protocol::PLAYER_STATE_RUN)
-		{
-			speed = runSpeed;
-		}
 		float distance = (direction * speed * DeltaTime).Length();
 
 		distance = FMath::Min(distanceToDest, distance);

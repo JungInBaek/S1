@@ -125,4 +125,8 @@ public:
 
 	UPROPERTY()
 	class UUserWidget* _crosshairUI;
+
+	// 카메라 셰이크 블루프린트 저장 변수
+	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)
+	TSubclassOf<class UCameraShakeBase> cameraShake;
 };

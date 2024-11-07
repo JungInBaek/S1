@@ -166,13 +166,12 @@ enum PlayerState : int {
   PLAYER_STATE_LEFT_BACKWARD = 9,
   PLAYER_STATE_JUMP = 10,
   PLAYER_STATE_FIRE = 11,
-  PLAYER_STATE_RUN = 12,
   PlayerState_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   PlayerState_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool PlayerState_IsValid(int value);
 constexpr PlayerState PlayerState_MIN = PLAYER_STATE_NONE;
-constexpr PlayerState PlayerState_MAX = PLAYER_STATE_RUN;
+constexpr PlayerState PlayerState_MAX = PLAYER_STATE_FIRE;
 constexpr int PlayerState_ARRAYSIZE = PlayerState_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* PlayerState_descriptor();

@@ -39,7 +39,7 @@ const char descriptor_table_protodef_Enum_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "PlayerType\022\024\n\020PLAYER_TYPE_NONE\020\000\022\025\n\021PLAY"
   "ER_TYPE_ADMIN\020\001\022\030\n\024PLAYER_TYPE_SURVIVOR\020"
   "\002*:\n\nEnermyType\022\024\n\020ENERMY_TYPE_NONE\020\000\022\026\n"
-  "\022ENERMY_TYPE_ZOMBIE\020\001*\343\002\n\013PlayerState\022\025\n"
+  "\022ENERMY_TYPE_ZOMBIE\020\001*\315\002\n\013PlayerState\022\025\n"
   "\021PLAYER_STATE_NONE\020\000\022\025\n\021PLAYER_STATE_IDL"
   "E\020\001\022\030\n\024PLAYER_STATE_FORWARD\020\002\022\031\n\025PLAYER_"
   "STATE_BACKWARD\020\003\022\026\n\022PLAYER_STATE_RIGHT\020\004"
@@ -47,16 +47,16 @@ const char descriptor_table_protodef_Enum_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "RIGHT_FORWARD\020\006\022\035\n\031PLAYER_STATE_LEFT_FOR"
   "WARD\020\007\022\037\n\033PLAYER_STATE_RIGHT_BACKWARD\020\010\022"
   "\036\n\032PLAYER_STATE_LEFT_BACKWARD\020\t\022\025\n\021PLAYE"
-  "R_STATE_JUMP\020\n\022\025\n\021PLAYER_STATE_FIRE\020\013\022\024\n"
-  "\020PLAYER_STATE_RUN\020\014*\232\001\n\013EnermyState\022\025\n\021E"
-  "NERMY_STATE_NONE\020\000\022\025\n\021ENERMY_STATE_IDLE\020"
-  "\001\022\025\n\021ENERMY_STATE_MOVE\020\002\022\027\n\023ENERMY_STATE"
-  "_ATTACK\020\003\022\027\n\023ENERMY_STATE_DAMAGE\020\004\022\024\n\020EN"
-  "ERMY_STATE_DIE\020\005b\006proto3"
+  "R_STATE_JUMP\020\n\022\025\n\021PLAYER_STATE_FIRE\020\013*\232\001"
+  "\n\013EnermyState\022\025\n\021ENERMY_STATE_NONE\020\000\022\025\n\021"
+  "ENERMY_STATE_IDLE\020\001\022\025\n\021ENERMY_STATE_MOVE"
+  "\020\002\022\027\n\023ENERMY_STATE_ATTACK\020\003\022\027\n\023ENERMY_ST"
+  "ATE_DAMAGE\020\004\022\024\n\020ENERMY_STATE_DIE\020\005b\006prot"
+  "o3"
   ;
 static ::_pbi::once_flag descriptor_table_Enum_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Enum_2eproto = {
-    false, false, 944, descriptor_table_protodef_Enum_2eproto,
+    false, false, 922, descriptor_table_protodef_Enum_2eproto,
     "Enum.proto",
     &descriptor_table_Enum_2eproto_once, nullptr, 0, 0,
     schemas, file_default_instances, TableStruct_Enum_2eproto::offsets,
@@ -150,7 +150,6 @@ bool PlayerState_IsValid(int value) {
     case 9:
     case 10:
     case 11:
-    case 12:
       return true;
     default:
       return false;

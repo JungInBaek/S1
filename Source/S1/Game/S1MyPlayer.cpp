@@ -236,6 +236,10 @@ void AS1MyPlayer::Turn(const FInputActionValue& Value)
 
 void AS1MyPlayer::Fire(const FInputActionValue& Value)
 {
+	// 카메라 셰이크 재생
+	auto controller = GetWorld()->GetFirstPlayerController();
+	controller->PlayerCameraManager->StartCameraShake(cameraShake);
+
 	// 공격 애니메이션 재생
 	auto anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 	anim->PlayAttackAnim();
