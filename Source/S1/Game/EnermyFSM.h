@@ -75,4 +75,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = FSM)
 	float dieSpeed = 50.0f;
+
+	// 사용 중인 애니메이션 블루프린트
+	UPROPERTY()
+	class UEnermyAnim* anim;
 };

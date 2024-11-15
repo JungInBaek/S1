@@ -154,3 +154,10 @@ message C_DAMAGE_ENERMY
 	uint64 target_id = 2;
 	uint32 damage = 3;
 }
+
+message S_ATTACK_ENERMY
+{
+	uint64 object_id = 1;
+	uint64 target_id = 2;
+	uint32 damage = 3;
+}

@@ -43,6 +43,7 @@ public:
 	void HandleFire(const Protocol::S_FIRE& FirePkt);
 	void HandleSniperFire(const Protocol::S_SNIPER_FIRE& FirePkt);
 	void HandleChangeItem(const Protocol::S_CHANGE_ITEM& ChangePkt);
+	void HandleAttackEnermy(const Protocol::S_ATTACK_ENERMY& AttackPkt);
 	
 	void HandleDespawn(uint64 ObjectId);
 	void HandlePlayerState(const Protocol::S_STATE& StatePkt);

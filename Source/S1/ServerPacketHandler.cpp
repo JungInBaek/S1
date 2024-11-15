@@ -149,3 +149,12 @@ bool Handle_S_CHANGE_ITEM(PacketSessionRef& session, Protocol::S_CHANGE_ITEM& pk
     }
     return true;
 }
+
+bool Handle_S_ATTACK_ENERMY(PacketSessionRef& session, Protocol::S_ATTACK_ENERMY& pkt)
+{
+    if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+    {
+        GameInstance->HandleAttackEnermy(pkt);
+    }
+    return true;
+}

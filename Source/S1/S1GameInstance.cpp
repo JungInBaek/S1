@@ -13,6 +13,7 @@
 #include "Enermy.h"
 #include "EnermyFSM.h"
 #include "S1.h"
+#include "EnermyAnim.h"
 
 
 void US1GameInstance::ConnectToGameServer()
@@ -294,6 +295,7 @@ void US1GameInstance::HandleEnermyInfo(const Protocol::S_ENERMY_INFO& EnermyPkt)
 		(*Enermy)->SetDestInfo(EnermyPkt.objectinfo().pos_info());
 		(*Enermy)->enermyFsm->hp = EnermyPkt.objectinfo().creature_info().hp();
 		(*Enermy)->enermyFsm->State = static_cast<EEnermyState>(EnermyPkt.objectinfo().enermy_info().enermy_state());
+		(*Enermy)->enermyFsm->anim->animState = (*Enermy)->enermyFsm->State;
 
 		if (AS1Player** Target = Players.Find(TargetId))
 		{
@@ -453,4 +455,22 @@ void US1GameInstance::HandleChangeItem(const Protocol::S_CHANGE_ITEM& ChangePkt)
 	}
 
 	player->ChangeItem(ChangePkt.key());
+}
+
+void US1GameInstance::HandleAttackEnermy(const Protocol::S_ATTACK_ENERMY& AttackPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	const uint64 objectId = AttackPkt.object_id();
+	AEnermy** FindEnermy = Enermies.Find(objectId);
+	if (FindEnermy == nullptr)
+	{
+		return;
+	}
+
+	AEnermy* enermy = *FindEnermy;
+	enermy->AttackEnermy(AttackPkt.target_id());
 }

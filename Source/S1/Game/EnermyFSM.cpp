@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "S1.h"
 #include "Components/CapsuleComponent.h"
+#include "EnermyAnim.h"
 
 
 // Sets default values for this component's properties
@@ -25,7 +26,10 @@ void UEnermyFSM::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 소유 객체
 	me = Cast<AEnermy>(GetOwner());
+
+	anim = Cast<UEnermyAnim>(me->GetMesh()->GetAnimInstance());
 }
 
 
@@ -33,23 +37,6 @@ void UEnermyFSM::BeginPlay()
 void UEnermyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	//if (target == nullptr)
-	/*{
-		float min = FLT_MAX;
-		TArray<AActor*, FDefaultAllocator> actors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AS1Player::StaticClass(), actors);
-		for (AActor* actor : actors)
-		{
-			AS1Player* player = Cast<AS1Player>(actor);
-			float distance = FVector::Distance(player->GetActorLocation(), me->GetActorLocation());
-			if (min > distance)
-			{
-				min = distance;
-				target = player;
-			}
-		}
-	}*/
 
 	// 실행창에 상태 메시지 출력
 	FString logMsg = UEnum::GetValueAsString(State);
@@ -132,6 +119,8 @@ void UEnermyFSM::AttackState()
 	{
 		mState = EEnermyState::Move;
 	}*/
+
+	//anim->bAttackPlay = true;
 }
 
 void UEnermyFSM::DamageState()
