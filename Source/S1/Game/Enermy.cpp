@@ -107,6 +107,7 @@ void AEnermy::SetState(Protocol::EnermyState State)
 	Protocol::EnermyInfo enermyInfo = ObjectInfo->enermy_info();
 	enermyInfo.set_enermy_state(State);
 	ObjectInfo->mutable_enermy_info()->CopyFrom(enermyInfo);
+	enermyFsm->State = static_cast<EEnermyState>(State);
 }
 
 void AEnermy::AttackEnermy(uint64 targetId)

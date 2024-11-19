@@ -19,6 +19,10 @@ public:
 	// 공격 애니메이션 종료 이벤트 함수
 	UFUNCTION(BlueprintCallable, category = "FSMEvent")
 	void OnEndAttackAnimation();
+
+	// 피격 애니메이션 재생 함수
+	UFUNCTION(BlueprintImplementableEvent, Category = "FSMEvent")
+	void PlayDamageAnim(FName sectionName);
 	
 public:
 	// 상태 머신 변수
