@@ -158,3 +158,12 @@ bool Handle_S_ATTACK_ENERMY(PacketSessionRef& session, Protocol::S_ATTACK_ENERMY
     }
     return true;
 }
+
+bool Handle_S_ENERMY_DIE(PacketSessionRef& session, Protocol::S_ENERMY_DIE& pkt)
+{
+	if (auto* GameInstance = Cast<US1GameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleEnermyDie(pkt);
+	}
+    return true;
+}

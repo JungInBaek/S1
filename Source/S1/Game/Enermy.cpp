@@ -108,10 +108,16 @@ void AEnermy::SetState(Protocol::EnermyState State)
 	enermyInfo.set_enermy_state(State);
 	ObjectInfo->mutable_enermy_info()->CopyFrom(enermyInfo);
 	enermyFsm->State = static_cast<EEnermyState>(State);
+	enermyFsm->anim->animState = enermyFsm->State;
 }
 
-void AEnermy::AttackEnermy(uint64 targetId)
+void AEnermy::Attack(uint64 targetId)
 {
 	enermyFsm->anim->bAttackPlay = true;
+}
+
+void AEnermy::Die()
+{
+	enermyFsm->anim->PlayDamageAnim(TEXT("Die"));
 }
 

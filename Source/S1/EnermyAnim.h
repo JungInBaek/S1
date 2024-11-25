@@ -32,4 +32,8 @@ public:
 	// 공격 상태 재생 여부
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FSM")
 	bool bAttackPlay = false;
+
+	// 죽음 상태 애니메이션 종료 여부
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FSM")
+	bool bDieDone = false;
 };

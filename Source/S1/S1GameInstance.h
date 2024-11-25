@@ -44,10 +44,10 @@ public:
 	void HandleSniperFire(const Protocol::S_SNIPER_FIRE& FirePkt);
 	void HandleChangeItem(const Protocol::S_CHANGE_ITEM& ChangePkt);
 	void HandleAttackEnermy(const Protocol::S_ATTACK_ENERMY& AttackPkt);
-	
 	void HandleDespawn(uint64 ObjectId);
 	void HandlePlayerState(const Protocol::S_STATE& StatePkt);
 	void HandleEnermyState(const Protocol::S_STATE& StatePkt);
+	void HandleEnermyDie(const Protocol::S_ENERMY_DIE& DiePkt);
 
 public:
 	// Game Server

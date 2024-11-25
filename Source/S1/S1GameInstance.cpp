@@ -210,12 +210,6 @@ void US1GameInstance::HandleSpawn(const Protocol::S_SPAWN& SpawnPkt)
 
 void US1GameInstance::HandleDespawn(uint64 ObjectId)
 {
-	AS1Player** FindPlayer = Players.Find(ObjectId);
-	if (FindPlayer == nullptr)
-	{
-		return;
-	}
-
 	if (Socket == nullptr || GameServerSession == nullptr)
 	{
 		return;
@@ -227,9 +221,21 @@ void US1GameInstance::HandleDespawn(uint64 ObjectId)
 		return;
 	}
 
-	World->DestroyActor(*FindPlayer);
-	
-	//Players.Remove(ObjectId);
+	AS1Player** FindPlayer = Players.Find(ObjectId);
+	if (FindPlayer != nullptr)
+	{
+		World->DestroyActor(*FindPlayer);
+		Players.Remove(ObjectId);
+		return;
+	}
+
+	AEnermy** FindEnermy = Enermies.Find(ObjectId);
+	if (FindEnermy != nullptr)
+	{
+		World->DestroyActor(*FindEnermy);
+		Enermies.Remove(ObjectId);
+		return;
+	}
 }
 
 void US1GameInstance::HandlePlayerState(const Protocol::S_STATE& StatePkt)
@@ -262,6 +268,24 @@ void US1GameInstance::HandleEnermyState(const Protocol::S_STATE& StatePkt)
 	}
 
 	(*Enermy)->SetState(StatePkt.enermy_state());
+}
+
+void US1GameInstance::HandleEnermyDie(const Protocol::S_ENERMY_DIE& DiePkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+	{
+		return;
+	}
+
+	const uint64 ObjectId = DiePkt.object_id();
+	AEnermy** FindEnermy = Enermies.Find(ObjectId);
+	if (FindEnermy == nullptr)
+	{
+		return;
+	}
+
+	AEnermy* Enermy = *FindEnermy;
+	Enermy->Die();
 }
 
 void US1GameInstance::HandleDespawn(const Protocol::S_DESPAWN& DespawnPkt)
@@ -472,5 +496,5 @@ void US1GameInstance::HandleAttackEnermy(const Protocol::S_ATTACK_ENERMY& Attack
 	}
 
 	AEnermy* enermy = *FindEnermy;
-	enermy->AttackEnermy(AttackPkt.target_id());
+	enermy->Attack(AttackPkt.target_id());
 }

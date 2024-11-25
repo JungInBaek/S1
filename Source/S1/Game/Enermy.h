@@ -36,7 +36,8 @@ public:
 	void SetDestInfo(const Protocol::PosInfo& Info);
 	void SetState(Protocol::EnermyState State);
 
-	void AttackEnermy(uint64 targetId);
+	void Attack(uint64 targetId);
+	void Die();
 
 	Protocol::ObjectInfo* GetObjectInfo() { return ObjectInfo; }
 	Protocol::PosInfo* GetCurrentInfo() { return CurrentInfo; }

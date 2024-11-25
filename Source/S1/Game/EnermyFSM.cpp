@@ -8,6 +8,7 @@
 #include "S1.h"
 #include "Components/CapsuleComponent.h"
 #include "EnermyAnim.h"
+#include "S1GameInstance.h"
 
 
 // Sets default values for this component's properties
@@ -140,6 +141,11 @@ void UEnermyFSM::DamageState()
 
 void UEnermyFSM::DieState()
 {
+	if (anim->bDieDone == false)
+	{
+		return;
+	}
+
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	FVector P0 = me->GetActorLocation();
 	FVector vt = FVector::DownVector * dieSpeed * GetWorld()->DeltaTimeSeconds;
@@ -148,7 +154,7 @@ void UEnermyFSM::DieState()
 
 	if (P.Z < -200.0f)
 	{
-		me->Destroy();
+		//me->Destroy();
 	}
 }
 
